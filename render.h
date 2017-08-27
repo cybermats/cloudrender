@@ -19,13 +19,21 @@ public:
     {}
 
     void run() {
+        std::cout << "Render!" << std::endl;
         while(!_sampler->done()) {
+            std::cout << "Generating ray..." << std::endl;
             auto ray = _lights->generate_ray();
             while(ray.active())
             {
                 auto inter = _scene->intersect(ray);
-                auto material = inter.tri->material();
-                ray = material->shade(inter);
+                if (inter.t >= 0) {
+                    std::cout << "Hit!" << std::endl;
+                    auto material = inter.tri->material();
+                    ray = material->shade(inter);    
+                } else {
+                    std::cout << "Miss!" << std::endl;
+                    break;
+                }
             }
         }
     }

@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include "config.h"
 
 template<class T>
 struct vec2
@@ -198,3 +199,59 @@ color operator*(float v, const color& c) {
     return color(c.r * v, c.g * v, c.b * v, c.a);
 }
 
+
+struct matrix3f
+{
+private:
+    float _cell[9];
+public:
+
+    matrix3f() {}
+
+    matrix3f(float value) 
+    {
+        std::fill(_cell, _cell + 9, value);
+    }
+
+    matrix3f(float aa, float ab, float ac, float ba, float bb, float bc, float ca, float cb, float cc)
+    : _cell{aa, ab, ac, ba, bb, bc, ca, cb, cc}
+    {
+    }
+
+    struct matrix_row
+    {
+        matrix3f *_matrix;
+        int row;
+
+        float& operator[](int column) {
+            return _matrix->_cell[row * 3 + column];
+        }
+    };
+
+    struct const_matrix_row
+    {
+        const matrix3f *_matrix;
+        int row;
+
+        float operator[](int column) const {
+            return _matrix->_cell[row * 3 + column];
+        }
+    };
+
+    matrix_row operator[](int row) {
+        return matrix_row{this, row};
+    }
+
+    const_matrix_row operator[](int row) const {
+        return const_matrix_row{this, row};
+    }
+
+    vec3f operator* (const vec3f& vec) {
+        return vec3f(
+            _cell[0] * vec.x + _cell[1] * vec.y + _cell[2] * vec.z,
+            _cell[3] * vec.x + _cell[4] * vec.y + _cell[5] * vec.z,
+            _cell[6] * vec.x + _cell[7] * vec.y + _cell[8] * vec.z            
+        );
+    }
+
+};

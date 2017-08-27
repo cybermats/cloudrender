@@ -8,5 +8,5 @@ class intersection;
 class imaterial
 {
 public:
-    virtual ray shade(const intersection& r) const = 0;
+    virtual ray shade(const intersection& r) = 0;
 };

@@ -8,4 +8,5 @@ struct intersection
     triangle* tri;
     vec3f normal;
     ray* ray;
+    vec3f position;
 };

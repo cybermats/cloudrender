@@ -24,15 +24,20 @@ public:
         }
 
         auto normal = vec3f();
+        auto position = vec3f();
         if (hit) {
             normal = hit->normal();
+            position = r.origin() + r.direction() * t_max;
+        } else {
+            t_max = -1;
         }
 
         return intersection {
             t_max,
             hit,
             normal,
-            &r
+            &r,
+            position
         };
 
     }

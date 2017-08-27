@@ -9,13 +9,14 @@
 #include "imaterial.h"
 #include "sampler.h"
 #include "render.h"
+#include "matte_material.h"
 
 int main() {
     lightsource ls;
     ls.add_light(new pointlight(vec3f(0., 0.9, 0.), color(1, 1, 1), 1));
 
     scene sc;
-    imaterial* white_material;
+    auto white_material = new matte_material(color(1,1,1));
 
     sc.add_triangle(triangle(vec3f(-1, -1, -1), vec3f(1, -1, -1), vec3f(-1, 1, -1), white_material));
     sc.add_triangle(triangle(vec3f(1, -1, -1), vec3f(-1, 1, -1), vec3f(1, 1, -1), white_material));

@@ -12,9 +12,13 @@ private:
     size_t _index;
 
 public:
+    lightsource()
+    : _index(0)
+    {}
+
     ray generate_ray() {
         auto ray = _lights[_index++]->generate_ray();
-        if (_index > _lights.size())
+        if (_index >= _lights.size())
             _index = 0;
         return ray;
     }

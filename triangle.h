@@ -31,7 +31,7 @@ public:
         return _normal;
     }
 
-    const imaterial* material() const
+    imaterial* material() const
     {
         return _material;
     }

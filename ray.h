@@ -30,6 +30,10 @@ public:
         return _direction;
     }
 
+    int age() const {
+        return _age;
+    }
+
     bool active() const {
         return _age < config::MAX_RAY_AGE;
     }
