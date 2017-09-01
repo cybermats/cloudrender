@@ -133,6 +133,11 @@ struct vec3
         return x * other.x + y * other.y + z * other.z;
     }
 
+    vec3<T> normalize() const {
+        auto inv_len = 1.f / length();
+        return *this * inv_len;
+    }
+
     vec3<T> cross(const vec3<T> other) const {
         return vec3<T>(
             y * other.z - z * other.y,

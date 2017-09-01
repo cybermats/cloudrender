@@ -22,6 +22,10 @@ public:
         assert(std::abs(_direction.length() - 1.) < config::ERR);
     }
 
+    ray()
+    : _age(config::MAX_RAY_AGE)
+    {}
+
     const vec3f& origin() const {
         return _origin;
     }
