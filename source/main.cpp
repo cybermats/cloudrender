@@ -14,6 +14,7 @@
  #include "camera.h"
  #include "imagebuffer.h"
  #include "radiance_sample.h"
+#include "obj_file.h"
 
  #include <boost/program_options.hpp>
 
@@ -94,6 +95,7 @@
 			    vec3f(width, height, length),
 			    white));
  }
+
 
 void render_pass(radiance_buffer& rb, int samples, bool show_progress, int threads)
  {
