@@ -2,12 +2,12 @@
 
 #include <iostream>
 #include <algorithm>
+#include <mutex>
 
 #include "ray.h"
 #include "intersection.h"
 #include "sampler.h"
 #include "scene.h"
-//#include "imagebuffer.h"
 #include "radiance_sample.h"
 
 
@@ -22,8 +22,8 @@ class camera : public imaterial
   vec3f _view_dir;
   vec3f _u;
   vec3f _v;
-  //  imagebuffer *_ib;
   radiance_buffer *_rb;
+  std::mutex _mtx;
 
  public:
  camera(vec3f position, vec3f up, vec3f lookat, float object_dist, float image_dist,
@@ -39,7 +39,7 @@ class camera : public imaterial
 
 
     _f = 1.f / (1.f/_do + 1.f/_di);
-        
+    /*        
     std::cout << "cam pos: " << _position << std::endl;
     std::cout << "cam viewDir: " << _view_dir << std::endl;
     std::cout << "cam v: " << _v << std::endl;
@@ -47,6 +47,7 @@ class camera : public imaterial
     std::cout << "cam f: " << _f << std::endl;
     std::cout << "cam do: " << _do << std::endl;
     std::cout << "cam di: " << _di << std::endl;
+    */
   }
 
   void setup_scene(scene& s) {
@@ -57,10 +58,10 @@ class camera : public imaterial
 
     auto t1 = triangle(v0, v2, v1, this);
     auto t2 = triangle(v1, v2, v3, this);
-
+    /*
     std::cout << "t1.normal: " << t1.normal() << std::endl;
     std::cout << "t2.normal: " << t2.normal() << std::endl;
-        
+    */  
     s.add_triangle(t1);
     s.add_triangle(t2);
   }
@@ -147,7 +148,9 @@ class camera : public imaterial
     if (!lens_equation(i, uv))
       return ray();
     //    _rb->add(uv, i.ray->color(), i.ray->age());
+    _mtx.lock();
     _rb->emplace_back(uv, i.ray->color(), i.ray->age());
+    _mtx.unlock();
     /*
     auto x = (int)(((uv.x + 0.1) / 0.2) * _ib->width());
     auto y = (int)(((uv.y + 0.1) / 0.2) * _ib->height());

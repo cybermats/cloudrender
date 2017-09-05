@@ -8,10 +8,10 @@ struct radiance_sample
 {
   radiance_sample(){}
 
-  radiance_sample(const vec2f& plate_pos, const color& color, int ray_age)
-  : plate_pos(plate_pos)
-  , color(color)
-  , ray_age(ray_age)
+  radiance_sample(const vec2f& pos, const color& c, int age)
+  : plate_pos(pos)
+  , color(c)
+  , ray_age(age)
   {}
 
   

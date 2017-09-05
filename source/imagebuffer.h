@@ -47,7 +47,7 @@ class imagebuffer
   }
 
 
-  void save(const char* filename) {
+  void save(const char* filename, double gamma) {
     std::lock_guard<std::mutex> lg(_mtx);
     auto max = 0.f;
     for (auto& c: _buffer) {
@@ -59,13 +59,12 @@ class imagebuffer
     f << "P6\n" << _width << " " << _height << "\n255\n";
     for (auto& c: _buffer) {
       char cb[3];
-      constexpr static double gamma = 0.5;
       auto r = (double)c.r / max;
       auto g = (double)c.g / max;
       auto b = (double)c.b / max;
-      r = std::pow(r, gamma);
-      g = std::pow(g, gamma);
-      b = std::pow(b, gamma);
+      r = std::pow(r, 1./gamma);
+      g = std::pow(g, 1./gamma);
+      b = std::pow(b, 1./gamma);
       cb[0] = r * 255;
       cb[1] = g * 255;
       cb[2] = b * 255;

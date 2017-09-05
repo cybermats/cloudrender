@@ -9,12 +9,14 @@ private:
     int _step;
     int _break;
     int _progress;
+    bool _show_progress;
     constexpr static int step_count = 20;
     std::mutex _mtx;
     
 public:
-    sampler(int counter)
+ sampler(int counter, bool show_progress = true)
     : _counter(counter)
+      , _show_progress(show_progress)
     {
         _step = _counter / step_count;
         _break = _counter;
@@ -22,10 +24,12 @@ public:
 
     }
 
+    
+
     bool done()
     {
       std::lock_guard<std::mutex> lg(_mtx);
-        if (_counter < _break) {
+        if (_counter < _break && _show_progress) {
             std::cout << "[" << _progress << "%]" << std::endl;
             _progress += 100 / step_count;
             _break -= _step;

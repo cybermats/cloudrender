@@ -25,7 +25,7 @@ class ray
   }
 
  ray()
-   : _age(config::MAX_RAY_AGE)
+    : _age(config::get_config().max_ray_age)
     {}
 
   const vec3f& origin() const {
@@ -45,7 +45,7 @@ class ray
   }
 
   bool active() const {
-    return _age < config::MAX_RAY_AGE;
+    return _age < config::get_config().max_ray_age;
   }
 };
 

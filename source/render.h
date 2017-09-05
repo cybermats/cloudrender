@@ -32,7 +32,6 @@ public:
     }
 
     void run() {
-        std::cout << "Render!" << std::endl;
         while(!_sampler->done()) {
             auto ray = _lights->generate_ray();
             while(ray.active())

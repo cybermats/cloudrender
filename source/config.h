@@ -4,5 +4,15 @@
 namespace config 
 {
     const static float ERR = 1e-5;
-    const static int MAX_RAY_AGE = 4;
+
+    struct config
+    {
+      int max_ray_age;
+    };
+
+    config& get_config()
+    {
+      static config cfg;
+      return cfg;
+    }
 }
