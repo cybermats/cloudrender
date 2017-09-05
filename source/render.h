@@ -4,6 +4,8 @@
 #include "scene.h"
 #include "sampler.h"
 
+#include <future>
+
 class render
 {
 private:
@@ -18,20 +20,28 @@ public:
     , _sampler(sampler)
     {}
 
+    void run(int thread_count) {
+      std::vector<std::future<void> > futures;
+      for(int i = 0; i < thread_count; ++i) {
+	auto func = [this](){this->run();};
+	futures.push_back(std::async(std::launch::async, func));
+      }
+      for(auto& f : futures) {
+	f.wait();
+      }
+    }
+
     void run() {
         std::cout << "Render!" << std::endl;
         while(!_sampler->done()) {
-//            std::cout << "Generating ray..." << std::endl;
             auto ray = _lights->generate_ray();
             while(ray.active())
             {
                 auto inter = _scene->intersect(ray);
                 if (inter.t >= 0) {
-//                    std::cout << "Hit!" << std::endl;
                     auto material = inter.tri->material();
                     ray = material->shade(inter);
                 } else {
-//                    std::cout << "Miss!" << std::endl;
                     break;
                 }
             }

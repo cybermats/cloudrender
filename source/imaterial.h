@@ -3,7 +3,7 @@
 #include "vecmath.h"
 #include "ray.h"
 
-class intersection;
+struct intersection;
 
 class imaterial
 {

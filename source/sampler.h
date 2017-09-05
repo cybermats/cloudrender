@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mutex>
+
 class sampler
 {
 private:
@@ -7,11 +9,14 @@ private:
     int _step;
     int _break;
     int _progress;
+    constexpr static int step_count = 20;
+    std::mutex _mtx;
+    
 public:
     sampler(int counter)
     : _counter(counter)
     {
-        _step = _counter / 10;
+        _step = _counter / step_count;
         _break = _counter;
         _progress = 0;
 
@@ -19,12 +24,13 @@ public:
 
     bool done()
     {
+      std::lock_guard<std::mutex> lg(_mtx);
         if (_counter < _break) {
             std::cout << "[" << _progress << "%]" << std::endl;
-            _progress += 10;
+            _progress += 100 / step_count;
             _break -= _step;
         }
 
-        return (_counter-- == 0);
+        return (_counter-- <= 0);
     }
 };

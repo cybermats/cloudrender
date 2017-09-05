@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <mutex>
 
 #include "ilight.h"
 
@@ -10,6 +11,7 @@ class lightsource
 private:
     std::vector<std::unique_ptr<ilight>> _lights;
     size_t _index;
+    std::mutex _mtx;
 
 public:
     lightsource()
@@ -17,6 +19,7 @@ public:
     {}
 
     ray generate_ray() {
+      std::lock_guard<std::mutex> lg(_mtx);
         auto ray = _lights[_index++]->generate_ray();
         if (_index >= _lights.size())
             _index = 0;

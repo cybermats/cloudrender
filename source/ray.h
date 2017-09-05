@@ -8,45 +8,48 @@
 
 class ray
 {
-private:
-    vec3f _origin;
-    vec3f _direction;
-    int _age;
+ private:
+  vec3f _origin;
+  vec3f _direction;
+  color _color;
+  int _age;
 
-public:
-    ray(vec3f origin, vec3f direction, int age = 0) 
-    : _origin(origin)
+ public:
+ ray(const vec3f& origin, const vec3f& direction, const color& color, int age = 0) 
+   : _origin(origin)
     , _direction(direction)
+    , _color(color)
     , _age(age)
-    {
-        assert(std::abs(_direction.length() - 1.) < config::ERR);
-    }
+  {
+    assert(std::abs(_direction.length() - 1.) < config::ERR);
+  }
 
-    ray()
-    : _age(config::MAX_RAY_AGE)
+ ray()
+   : _age(config::MAX_RAY_AGE)
     {}
 
-    const vec3f& origin() const {
-        return _origin;
-    }
+  const vec3f& origin() const {
+    return _origin;
+  }
 
-    const vec3f& direction() const {
-        return _direction;
-    }
+  const vec3f& direction() const {
+    return _direction;
+  }
 
-    int age() const {
-        return _age;
-    }
+  const color& color() const {
+    return _color;
+  }
 
-    bool active() const {
-        return _age < config::MAX_RAY_AGE;
-    }
+  int age() const {
+    return _age;
+  }
 
-
-
+  bool active() const {
+    return _age < config::MAX_RAY_AGE;
+  }
 };
 
 std::ostream& operator<<(std::ostream& stream, const ray& r) {
-    stream << "ray( origin: " << r.origin() << ", dir: " << r.direction() << ")";
-    return stream;
+  stream << "ray( origin: " << r.origin() << ", dir: " << r.direction() << ")";
+  return stream;
 }
