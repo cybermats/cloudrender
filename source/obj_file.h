@@ -11,5 +11,5 @@
 namespace obj_reader
 {
   
-  void read_obj_file(std::string filename, scene& sc);
+  void read_obj_file(std::string dir, std::string filename, scene& sc);
 };

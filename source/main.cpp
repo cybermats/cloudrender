@@ -136,8 +136,9 @@ void load_scene_obj(scene& sc, radiance_buffer& rb)
   sc.lightsource().add_light(new pointlight(vec3f(0, 1.7, 0), color(1, 1, 1, 1.0), 1));
   auto mat = sc.material().add_material("white",
 					new matte_material(color(.9,.9,.9, 1.0)));
-  std::string filename = "../data/CornellBox-Original.obj";
-  obj_reader::read_obj_file(filename, sc);
+  std::string filedir = "../data/";
+  std::string filename = "CornellBox-Original.obj";
+  obj_reader::read_obj_file(filedir, filename, sc);
 
   create_camera_load(sc, rb);
 }
