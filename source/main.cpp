@@ -208,8 +208,8 @@ int main(int argc, char** argv) {
 
       ("continuous,C", po::value<bool>(&continuous)->default_value(false),
        "if true then this will run continuously")
-
-      ("max-bouce-rate", po::value<int>(&max_bounce_rate)->default_value(4),
+ 
+     ("max-bouce-rate", po::value<int>(&max_bounce_rate)->default_value(4),
        "max bounces of rays")
 
       ("threads", po::value<int>(&threads)->default_value(4),
@@ -265,7 +265,8 @@ int main(int argc, char** argv) {
     if (continuous) {
       scene sc;
       radiance_buffer rb;
-      load_scene_static(sc, rb);
+      load_scene_obj(sc, rb);
+      //      load_scene_static(sc, rb);
       while(true) {
 	render_pass(sc, 1000000, false, threads); 
 	std::ofstream rf(output_filename, std::ofstream::out | std::ofstream::app);
