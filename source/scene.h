@@ -1,51 +1,34 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "triangle.h"
 #include "ray.h"
 #include "vecmath.h"
 #include "intersection.h"
+#include "camera.h"
+#include "lightsource.h"
+#include "ilight.h"
+#include "material_collection.h"
 
 class scene
 {
-public:
-    intersection intersect(ray& r)
-    {
-        auto hit = (triangle*)nullptr;
-        auto t_max = std::numeric_limits<float>::max();
-        for(auto& tri: _triangles)
-        {
-            auto t = tri.intersect(r);
-            if (t > 0 && t < t_max) {
-                t_max = t;
-                hit = &tri;
-            }
-        }
-
-        auto normal = vec3f();
-        auto position = vec3f();
-        if (hit) {
-            normal = hit->normal();
-            position = r.origin() + r.direction() * t_max;
-        } else {
-            t_max = -1;
-        }
-
-        return intersection {
-            t_max,
-            hit,
-            normal,
-            &r,
-            position
-        };
-
-    }
-
-    void add_triangle(const triangle& t) {
-        _triangles.push_back(t);
-    }
-
-private:
-    std::vector<triangle> _triangles;
+ private:
+  std::unique_ptr<camera> _cam;
+  std::vector<triangle> _triangles;
+  lightsource _lightsource;
+  material_collection _materials;
+  
+ public:
+  intersection intersect(ray& r);
+  void add_triangle(const triangle& t);
+  void add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
+		  float object_dist, float image_dist, radiance_buffer* rb);
+  lightsource& lightsource();
+  material_collection& material();
+  camera& get_camera() {
+    return *_cam;
+  }
 };
+

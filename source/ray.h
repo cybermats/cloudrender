@@ -2,8 +2,11 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <iostream>
 
 #include "vecmath.h"
+#include "vecutil.h"
+#include "color.h"
 #include "config.h"
 
 class ray
@@ -21,6 +24,12 @@ class ray
     , _color(color)
     , _age(age)
   {
+    auto len = std::abs(_direction.length() - 1.);
+    if (len > config::ERR) {
+      std::cout << "origin: " << origin << std::endl;
+      std::cout << "dir: " << direction << std::endl;
+    }
+			
     assert(std::abs(_direction.length() - 1.) < config::ERR);
   }
 
@@ -49,7 +58,4 @@ class ray
   }
 };
 
-std::ostream& operator<<(std::ostream& stream, const ray& r) {
-  stream << "ray( origin: " << r.origin() << ", dir: " << r.direction() << ")";
-  return stream;
-}
+std::ostream& operator<<(std::ostream& stream, const ray& r);

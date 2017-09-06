@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <iostream>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -10,6 +11,7 @@
 #include "intersection.h"
 #include "vecmath.h"
 #include "config.h"
+#include "color.h"
 
 class matte_material : public imaterial
 {
@@ -45,8 +47,18 @@ class matte_material : public imaterial
     auto dir = vec3f(x, y, z);
 
 
+    assert(std::abs(dir.length() - 1.) < config::ERR);
     dir = rot_mat * dir;
-    assert(dir.length() - 1 < config::ERR);
+    auto tmp = std::abs(dir.length() - 1.);
+    if (tmp > config::ERR) {
+      std::cout << "i.t: " << i.t << std::endl;
+      std::cout << "i.tri: " << *(i.tri) << std::endl;
+      std::cout << "i.normal: " << i.normal << std::endl;
+      std::cout << "i.ray: " << i.ray << std::endl;
+      std::cout << "i.position: " << i.position << std::endl;
+      std::cout << "rot_mat: " << rot_mat << std::endl;
+    }
+    assert(std::abs(dir.length() - 1.) < config::ERR);
     return ray(i.position + dir * config::ERR,
 	       dir,
 	       i.ray->color() * _color,

@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "ilight.h"
+#include "color.h"
 
 class pointlight : public ilight
 {

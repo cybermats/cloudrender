@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "vecmath.h"
+#include "color.h"
 
 class imagebuffer
 {

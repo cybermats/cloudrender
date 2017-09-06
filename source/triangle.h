@@ -3,6 +3,7 @@
 #include <cstdlib>
 
 #include "vecmath.h"
+#include "vecutil.h"
 #include "ray.h"
 #include "config.h"
 #include "imaterial.h"
@@ -17,6 +18,8 @@ private:
     vec3f _normal;
 
     imaterial* _material;
+
+    friend std::ostream& operator<<(std::ostream& stream, const triangle& tri);
 
 public:
     triangle(const vec3f& v0, const vec3f& v1, const vec3f& v2, imaterial* material)
@@ -63,4 +66,7 @@ public:
 
         return e2.dot(qvec) * inv_det;
     }
+
 };
+
+std::ostream& operator<<(std::ostream& stream, const triangle& tri);
