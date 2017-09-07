@@ -67,6 +67,16 @@ public:
         return e2.dot(qvec) * inv_det;
     }
 
+    const vec3f& v0() const {
+      return _v0;
+    }
+    const vec3f& v1() const {
+      return _v1;
+    }
+    const vec3f& v2() const {
+      return _v2;
+    }
+
 };
 
 std::ostream& operator<<(std::ostream& stream, const triangle& tri);

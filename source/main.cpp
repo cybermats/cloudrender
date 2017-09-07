@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/program_options.hpp>
+
 #include "vecmath.h"
 #include "vecutil.h"
 #include "pointlight.h"
@@ -16,129 +18,27 @@
 #include "radiance_sample.h"
 #include "obj_file.h"
 
-#include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
-
-void create_white_box(scene &sc)
-{
-  float length =1;
-  float height = 1;
-  float width = 1;
-  imaterial* white = sc.material().lookup_material("white");
-  imaterial* red = sc.material().lookup_material("red");
-  imaterial* green = sc.material().lookup_material("green");
-  imaterial* blue = sc.material().lookup_material("blue");
-  
-  // - z
-  sc.add_triangle(triangle(vec3f(-width, -height, -length),
-			   vec3f(width, -height, -length),
-			   vec3f(-width, height, -length),
-			   red));
-
-  sc.add_triangle(triangle(vec3f(width, -height, -length),
-			   vec3f(width, height, -length),
-			   vec3f(-width, height, -length),
-			   red));
-
-  // + z
-  sc.add_triangle(triangle(vec3f(-width, -height, length),
-			   vec3f(-width, height, length),
-			   vec3f(width, -height, length),
-			   red));
-
-  sc.add_triangle(triangle(vec3f(width, -height, length),
-			   vec3f(-width, height, length),
-			   vec3f(width, height, length),
-			   red));
-
-  // - y
-  sc.add_triangle(triangle(vec3f(-width, -height, -length),
-			   vec3f(-width, -height, length),
-			   vec3f(width, -height, -length),
-			   white));
-
-  sc.add_triangle(triangle(vec3f(width, -height, -length),
-			   vec3f(-width, -height, length),
-			   vec3f(width, -height, length),
-			   white));
-
-  // + y
-  sc.add_triangle(triangle(vec3f(-width, height, -length),
-			   vec3f(width, height, -length),
-			   vec3f(-width, height, length),
-			   white));
-
-  sc.add_triangle(triangle(vec3f(width, height, -length),
-			   vec3f(width, height, length),
-			   vec3f(-width, height, length),
-			   white));
-
-  // - x
-  sc.add_triangle(triangle(vec3f(-width, -height, -length),
-			   vec3f(-width, height, -length),
-			   vec3f(-width, -height, length),
-			   white));
-
-  sc.add_triangle(triangle(vec3f(-width, height, -length),
-			   vec3f(-width, height, length),
-			   vec3f(-width, -height, length),
-			   white));
-
-  // + x
-  sc.add_triangle(triangle(vec3f(width, -height, -length),
-			   vec3f(width, -height, length),
-			   vec3f(width, height, -length),
-			   white));
-
-  sc.add_triangle(triangle(vec3f(width, height, -length),
-			   vec3f(width, -height, length),
-			   vec3f(width, height, length),
-			   white));
-}
-
-void create_camera_static(scene& sc, radiance_buffer& rb)
-{
-  vec3f cam_pos(1, 1, 0.0);
-  vec3f cam_up(0, 1, 0);
-  vec3f cam_lookat(0, 0, 0);
-  float cam_object_dist = 1;
-  float cam_image_dist = .035;
-
-  sc.add_camera(cam_pos, cam_up, cam_lookat, cam_object_dist, cam_image_dist, &rb);
-}
 
 void create_camera_load(scene& sc, radiance_buffer& rb)
 {
   vec3f cam_pos(0, 1, 1);
   vec3f cam_up(0, 1, 0);
   vec3f cam_lookat(0, 1, 0);
-  float cam_object_dist = 1;
-  float cam_image_dist = .035;
+  float cam_focal = 0.0350;
+  float cam_hfov = 4;
+  float cam_fstop = 0.5f;
 
-  sc.add_camera(cam_pos, cam_up, cam_lookat, cam_object_dist, cam_image_dist, &rb);
-}
-
-void load_scene_static(scene& sc, radiance_buffer& rb)
-{
-  sc.lightsource().add_light(new pointlight(vec3f(0.0, 0.9, 0.), color(1, 1, 1, 1.0), 1));
-  sc.material().add_material("white", new matte_material(color(.9,.9,.9, 1.0)));
-  sc.material().add_material("red",   new matte_material(color(.9,.5,.5, 1.0)));
-  sc.material().add_material("green", new matte_material(color(.5,.9,.5, 1.0)));
-  sc.material().add_material("blue",  new matte_material(color(.5,.5,.9, 1.0)));
-  
-  create_white_box(sc);
-  create_camera_static(sc, rb);
+  sc.add_camera(cam_pos, cam_up, cam_lookat, cam_focal, cam_hfov, cam_fstop, &rb);
 }
 
 void load_scene_obj(scene& sc, radiance_buffer& rb)
 {
   sc.lightsource().add_light(new pointlight(vec3f(0, 1.7, 0), color(1, 1, 1, 1.0), 1));
-  auto mat = sc.material().add_material("white",
-					new matte_material(color(.9,.9,.9, 1.0)));
   std::string filedir = "../data/";
   std::string filename = "CornellBox-Original.obj";
-  obj_reader::read_obj_file(filedir, filename, sc);
+  obj_reader::read_obj_file(filedir, filename, sc, false);
 
   create_camera_load(sc, rb);
 }
@@ -153,8 +53,8 @@ void render_pass(scene& sc, int samples, bool show_progress, int threads)
 void image_pass(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
 {
   for(auto& s : rb) {
-    int x = ((s.plate_pos.x + 0.1) / 0.2) * ib.width();
-    int y = ((s.plate_pos.y + 0.1) / 0.2) * ib.height();
+    int x = ((s.plate_pos.x + 1) / 2.f) * ib.width();
+    int y = ((s.plate_pos.y + 1) / 2.f) * ib.height();
 
     x = std::max(std::min(x, (int)ib.width()-1), 0);
     y = std::max(std::min(y, (int)ib.height()-1), 0);
@@ -266,7 +166,7 @@ int main(int argc, char** argv) {
       scene sc;
       radiance_buffer rb;
       load_scene_obj(sc, rb);
-      //      load_scene_static(sc, rb);
+      std::cout << "Camera focal: " << sc.get_camera().f() << std::endl;
       while(true) {
 	render_pass(sc, 1000000, false, threads); 
 	std::ofstream rf(output_filename, std::ofstream::out | std::ofstream::app);
@@ -286,6 +186,11 @@ int main(int argc, char** argv) {
       std::cout << "Rendering..." << std::endl;
       scene sc;
       load_scene_obj(sc, rb);
+      std::cout << "Camera focal: " << sc.get_camera().f() << std::endl;
+      std::cout << "Camera di: " << sc.get_camera().d_i() << std::endl;
+      std::cout << "Camera do: " << sc.get_camera().d_o() << std::endl;
+      std::cout << "Camera h: " << sc.get_camera().h() << std::endl;
+      std::cout << "Camera aperture: " << sc.get_camera().aperture() << std::endl;
       //    load_scene_static(sc, rb);
       render_pass(sc, samples, true, threads);
       std::cout << "Samples hit: " << sc.get_camera().counter() << std::endl;

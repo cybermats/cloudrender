@@ -26,7 +26,7 @@ project(cloudrender CXX C)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CMAKE_BUILD_TYPE Debug)
 find_package (Threads REQUIRED)
-find_package (Boost COMPONENTS program_options  REQUIRED)
+find_package (Boost COMPONENTS program_options system REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 
@@ -53,3 +53,4 @@ target_link_libraries ("${PROJECT_NAME}" ${LIBRARIES})
 target_link_libraries ("unittest_${PROJECT_NAME}" ${LIBRARIES} gtest_main)
 enable_testing()
 add_test(NAME cloud_test COMMAND "unittest_${PROJECT_NAME}")
+ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)

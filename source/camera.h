@@ -16,6 +16,8 @@ class camera : public imaterial
   float _f;
   float _do;
   float _di;
+  float _aperture_diameter;
+  float _h;
   vec3f _position;
   vec3f _view_dir;
   vec3f _u;
@@ -24,8 +26,14 @@ class camera : public imaterial
   std::mutex _mtx;
 
  public:
+  /*
   camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
 	 float object_dist, float image_dist,
+	 radiance_buffer* rb);
+  */
+
+  camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
+	 float focal, float hfov, float fstop,
 	 radiance_buffer* rb);
 
   void setup_scene(scene& s);
@@ -46,6 +54,10 @@ class camera : public imaterial
     return _do;
   }
 
+  float h() const {
+    return _h;
+  }
+
   float d_i() const {
     return _di;
   }
@@ -64,6 +76,10 @@ class camera : public imaterial
 
   vec3f v() const {
     return _v;
+  }
+
+  float aperture() const {
+    return _aperture_diameter;
   }
 
 };

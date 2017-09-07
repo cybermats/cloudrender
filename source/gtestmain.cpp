@@ -11,7 +11,8 @@ protected:
   vec3f lookat(0, 0, 1);
   float od = 1;
   float id = 1;
-  cam = new camera(position, up, lookat, od, id, nullptr);
+  float fstop = 2.2;
+  cam = new camera(position, up, lookat, od, id, fstop, nullptr);
   }
 
   virtual void TearDown() {
@@ -29,7 +30,8 @@ protected:
   vec3f lookat(0, 0, 0);
   float od = 1;
   float id = 1;
-  cam = new camera(position, up, lookat, od, id, nullptr);
+  float fstop = 2.2;
+  cam = new camera(position, up, lookat, od, id, fstop, nullptr);
   }
 
   virtual void TearDown() {

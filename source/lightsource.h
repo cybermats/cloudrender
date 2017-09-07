@@ -19,6 +19,7 @@ public:
     {}
 
     ray generate_ray() {
+      assert(!_lights.empty());
       std::lock_guard<std::mutex> lg(_mtx);
         auto ray = _lights[_index++]->generate_ray();
         if (_index >= _lights.size())
@@ -27,7 +28,12 @@ public:
     }
 
     void add_light(ilight* light) {
+      std::cout << "lightsource::add_light()" << std::endl;
         _lights.push_back(std::unique_ptr<ilight>(light));
+    }
+
+    bool empty() const {
+      return _lights.empty();
     }
     
 };

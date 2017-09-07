@@ -23,8 +23,12 @@ class scene
  public:
   intersection intersect(ray& r);
   void add_triangle(const triangle& t);
+  /*
   void add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
 		  float object_dist, float image_dist, radiance_buffer* rb);
+  */
+  void add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
+		  float focal, float hfov, float fstop, radiance_buffer* rb);
   lightsource& lightsource();
   material_collection& material();
   camera& get_camera() {

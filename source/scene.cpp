@@ -34,11 +34,18 @@ intersection scene::intersect(ray& r)
 void scene::add_triangle(const triangle& t) {
   _triangles.push_back(t);
 }
-
+/*
 void scene::add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
 		       float object_dist, float image_dist, radiance_buffer* rb) {
   _cam = std::unique_ptr<camera>(new camera(position, up, lookat,
 					    object_dist, image_dist, rb));
+  _cam->setup_scene(*this);
+}
+*/
+void scene::add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
+		       float focal, float hfov, float fstop, radiance_buffer* rb) {
+  _cam = std::unique_ptr<camera>(new camera(position, up, lookat,
+					    focal, hfov, fstop, rb));
   _cam->setup_scene(*this);
 }
 

@@ -40,12 +40,6 @@ public:
             u
         );
 	
-	/*
-	const float r = sqrt(u);
-	const float x = r * cos(theta);
-	const float y = r * sin(theta);
-	auto dir = vec3f(x, y, sqrt(std::max(0., 1 - u)));
-	*/
         return ray(_origin, dir, _color);
     }
 
