@@ -2,6 +2,7 @@
 #include "camera.h"
 #include "config.h"
 #include "intersection.h"
+#include "triangle.h"
 
 class CameraTestSimple : public ::testing::Test {
 protected:
@@ -9,10 +10,10 @@ protected:
   vec3f position(0, 0, 0);
   vec3f up(0, 1, 0);
   vec3f lookat(0, 0, 1);
-  float od = 1;
-  float id = 1;
-  float fstop = 2.2;
-  cam = new camera(position, up, lookat, od, id, fstop, nullptr);
+  float focal = 0.5;
+  float hfov = 0.25;
+  float fstop = 1;
+  cam = new camera(position, up, lookat, focal, hfov, fstop, nullptr);
   }
 
   virtual void TearDown() {
@@ -28,10 +29,10 @@ protected:
   vec3f position(0, 0, 1);
   vec3f up(0, 1, 0);
   vec3f lookat(0, 0, 0);
-  float od = 1;
-  float id = 1;
-  float fstop = 2.2;
-  cam = new camera(position, up, lookat, od, id, fstop, nullptr);
+  float focal = 0.5;
+  float hfov = 0.1;
+  float fstop = 1;
+  cam = new camera(position, up, lookat, focal, hfov, fstop, nullptr);
   }
 
   virtual void TearDown() {
@@ -105,6 +106,8 @@ TEST_F(CameraTestSimple, lens_eq_center_off) {
 
   vec2f act;
   auto exp = vec2f(0.01, -0.01);
+  ASSERT_EQ(cam->d_i(), 1);
+  ASSERT_EQ(cam->d_o(), 1);
   ASSERT_TRUE(cam->lens_equation(i, act));
   EXPECT_PRED_FORMAT2(compare_vec, act, exp);
 }
@@ -176,6 +179,17 @@ TEST_F(CameraTestOff, lens_eq_off_off) {
   vec2f act;
   auto exp = vec2f(-0.01, -0.01);
   ASSERT_TRUE(cam->lens_equation(i, act));
+  EXPECT_PRED_FORMAT2(compare_vec, act, exp);
+}
+
+TEST(Triangle, Midpoint) {
+  vec3f v0(0, 1, 0);
+  vec3f v1(0, 1, 1);
+  vec3f v2(1, 1, 1);
+  triangle tri(v0, v1, v2, nullptr);
+
+  vec3f exp(1.f/3.f, 1, 2.f/3.f);
+  vec3f act = tri.midpoint();
   EXPECT_PRED_FORMAT2(compare_vec, act, exp);
 }
 

@@ -77,6 +77,10 @@ public:
       return _v2;
     }
 
+    vec3f midpoint() const {
+      return (_v0 + _v1 + _v2) * (1.f / 3.f);
+    }
+
 };
 
 std::ostream& operator<<(std::ostream& stream, const triangle& tri);

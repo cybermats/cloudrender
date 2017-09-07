@@ -14,13 +14,16 @@ class ray
  private:
   vec3f _origin;
   vec3f _direction;
+  vec3f _inv_direction;
   color _color;
   int _age;
+  int _sign[3];
 
  public:
  ray(const vec3f& origin, const vec3f& direction, const color& color, int age = 0) 
    : _origin(origin)
     , _direction(direction)
+    , _inv_direction(1/direction.x, 1/direction.y, 1/direction.z)
     , _color(color)
     , _age(age)
   {
@@ -31,6 +34,11 @@ class ray
     }
 			
     assert(std::abs(_direction.length() - 1.) < config::ERR);
+
+
+    _sign[0] = (_inv_direction.x < 0);
+    _sign[1] = (_inv_direction.y < 0);
+    _sign[2] = (_inv_direction.z < 0);
   }
 
  ray()
@@ -43,6 +51,14 @@ class ray
 
   const vec3f& direction() const {
     return _direction;
+  }
+
+  const vec3f& inv_direction() const {
+    return _inv_direction;
+  }
+
+  const int* sign() const {
+    return _sign;
   }
 
   const color& color() const {

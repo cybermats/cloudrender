@@ -118,6 +118,13 @@ vec3(const T& x, const T& y, const T& z)
     return vec3<T>(x + other.x, y + other.y, z + other.z);
   }
 
+  vec3<T>& operator+=(const vec3<T> other) {
+    x += other.x;
+    y += other.y;
+    z += other.z;
+    return *this;
+  }
+
   vec3<T> operator-(const vec3<T> other) const {
     return vec3<T>(x - other.x, y - other.y, z - other.z);
   }
@@ -156,6 +163,12 @@ template <class VecT, class ValT>
 template <class VecT, class ValT>
   vec3<VecT> operator*(const ValT& val, const vec3<VecT> vec) {
   return vec3<VecT>(vec.x * val, vec.y * val, vec.z * val);
+}
+
+template <class VecT, class ValT>
+  vec3<VecT> operator/(const vec3<VecT> vec, const ValT& val) {
+  auto tmp = 1.f / val;
+  return vec3<VecT>(vec.x * tmp, vec.y * tmp, vec.z * tmp);
 }
 
 using vec3i = vec3<int>;

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <chrono>
 
 #include <boost/program_options.hpp>
 
@@ -166,6 +167,7 @@ int main(int argc, char** argv) {
       scene sc;
       radiance_buffer rb;
       load_scene_obj(sc, rb);
+      sc.initialize();
       std::cout << "Camera focal: " << sc.get_camera().f() << std::endl;
       while(true) {
 	render_pass(sc, 1000000, false, threads); 
@@ -191,9 +193,20 @@ int main(int argc, char** argv) {
       std::cout << "Camera do: " << sc.get_camera().d_o() << std::endl;
       std::cout << "Camera h: " << sc.get_camera().h() << std::endl;
       std::cout << "Camera aperture: " << sc.get_camera().aperture() << std::endl;
-      //    load_scene_static(sc, rb);
+      
+      std::cout << "Initializing scene..." << std::endl;
+      sc.initialize();
+      
+      std::cout << "Render..." << std::endl;
+      auto t1 = std::chrono::high_resolution_clock::now();
+      
       render_pass(sc, samples, true, threads);
+
+      auto t2 = std::chrono::high_resolution_clock::now();
       std::cout << "Samples hit: " << sc.get_camera().counter() << std::endl;
+      auto dur_sec = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count();
+      auto dur_mil = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+      std::cout << "Time: " << dur_sec << "." << dur_mil << std::endl;
     }
 
     if (only_radiance) {

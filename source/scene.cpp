@@ -1,29 +1,36 @@
 #include "scene.h"
 
+#include "kd_tree.h"
+
 intersection scene::intersect(ray& r)
 {
+#ifdef NO_ACCELERATOR  
   auto hit = (triangle*)nullptr;
-  auto t_max = std::numeric_limits<float>::max();
-  for(auto& tri: _triangles)
-    {
-      auto t = tri.intersect(r);
-      if (t > 0 && t < t_max) {
-	t_max = t;
-	hit = &tri;
-      }
+  auto t_min = std::numeric_limits<float>::max();
+  for(auto& tri: _triangles) {
+    auto t = tri.intersect(r);
+    if (t > 0 && t < t_min) {
+      t_min = t;
+      hit = &tri;
     }
+  }
+#else
+
+  float t_min;
+  auto hit = _tree.intersect(r, t_min);
+#endif
 
   auto normal = vec3f();
   auto position = vec3f();
   if (hit) {
     normal = hit->normal();
-    position = r.origin() + r.direction() * t_max;
+    position = r.origin() + r.direction() * t_min;
   } else {
-    t_max = -1;
+    t_min = -1;
   }
 
   return intersection {
-    t_max,
+    t_min,
       hit,
       normal,
       &r,
@@ -32,7 +39,11 @@ intersection scene::intersect(ray& r)
 }
 
 void scene::add_triangle(const triangle& t) {
+#ifdef NO_ACCELERATOR
   _triangles.push_back(t);
+#else
+  _tree.add_triangle(new triangle(t));
+#endif
 }
 /*
 void scene::add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,

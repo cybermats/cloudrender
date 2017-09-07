@@ -11,14 +11,21 @@
 #include "lightsource.h"
 #include "ilight.h"
 #include "material_collection.h"
+#include "kd_tree.h"
+
+#define NO_ACCELERATOR
 
 class scene
 {
  private:
   std::unique_ptr<camera> _cam;
-  std::vector<triangle> _triangles;
   lightsource _lightsource;
   material_collection _materials;
+#ifdef NO_ACCELERATOR
+  std::vector<triangle> _triangles;
+#else
+  kd_tree _tree;
+#endif
   
  public:
   intersection intersect(ray& r);
@@ -29,10 +36,18 @@ class scene
   */
   void add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
 		  float focal, float hfov, float fstop, radiance_buffer* rb);
+
+  
   lightsource& lightsource();
   material_collection& material();
   camera& get_camera() {
     return *_cam;
   }
+  void initialize() {
+#ifndef NO_ACCELERATOR
+    _tree.initialize();
+#endif
+  }
+    
 };
 
