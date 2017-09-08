@@ -36,10 +36,12 @@ void create_camera_load(scene& sc, radiance_buffer& rb)
 
 void load_scene_obj(scene& sc, radiance_buffer& rb)
 {
-  sc.lightsource().add_light(new pointlight(vec3f(0, 1.7, 0), color(1, 1, 1, 1.0), 1));
+  bool allow_lights = true;
+  if (!allow_lights)
+    sc.lightsource().add_light(new pointlight(vec3f(0, 1.7, 0), color(1, 1, 1, 1.0), 1));
   std::string filedir = "../data/";
   std::string filename = "CornellBox-Original.obj";
-  obj_reader::read_obj_file(filedir, filename, sc, false);
+  obj_reader::read_obj_file(filedir, filename, sc, allow_lights);
 
   create_camera_load(sc, rb);
 }
@@ -110,7 +112,7 @@ int main(int argc, char** argv) {
       ("continuous,C", po::value<bool>(&continuous)->default_value(false),
        "if true then this will run continuously")
  
-     ("max-bouce-rate", po::value<int>(&max_bounce_rate)->default_value(4),
+     ("max-bounce-rate", po::value<int>(&max_bounce_rate)->default_value(4),
        "max bounces of rays")
 
       ("threads", po::value<int>(&threads)->default_value(4),
