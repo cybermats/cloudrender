@@ -45,9 +45,10 @@ class trilight : public ilight
     auto v = _v(_gen);
 
     if (u + v > 1.f) {
-      u -= 1.f;
-      v -= 1.f;
+      u = 1.f - u;
+      v = 1.f - v;
     }
+    assert(u + v > 0);
     assert(u + v <= 1.f);
 
 
