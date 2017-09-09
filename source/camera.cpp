@@ -4,6 +4,9 @@
 #include "camera.h"
 #include "intersection.h"
 #include "scene.h"
+
+#include "logger.h"
+
 /*
 camera::camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
 	       float object_dist, float image_dist,
@@ -116,21 +119,9 @@ ray camera::shade(const intersection& i)
   vec2f uv;
   if (!lens_equation(i, uv))
     return ray();
- //    _rb->add(uv, i.ray->color(), i.ray->age());
   _mtx.lock();
   _rb->emplace_back(uv, i.ray->color(), i.ray->age());
   _mtx.unlock();
-  /*
-    auto x = (int)(((uv.x + 0.1) / 0.2) * _ib->width());
-    auto y = (int)(((uv.y + 0.1) / 0.2) * _ib->height());
-    //    std::cout << "uv: " << uv << ", x: " << x << ", y: " << y << std::endl;
-
-    x = std::max(std::min(x, (int)_ib->width()-1), 0);
-    y = std::max(std::min(y, (int)_ib->height()-1), 0);
-    
-
-    _ib->inc(x, y, i.ray->color());
-  */  
   ++_counter;
   return ray();
 }

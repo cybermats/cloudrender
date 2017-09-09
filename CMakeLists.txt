@@ -26,7 +26,7 @@ project(cloudrender CXX C)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CMAKE_BUILD_TYPE Debug)
 find_package (Threads REQUIRED)
-find_package (Boost COMPONENTS program_options system REQUIRED)
+find_package (Boost COMPONENTS program_options filesystem log system thread REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 
@@ -40,6 +40,7 @@ set(SOURCE
   source/color.cpp
   source/triangle.cpp
   source/obj_file.cpp
+  source/logger.cpp
   )
 
 set(LIBRARIES

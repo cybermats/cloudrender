@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 #include "vecmath.h"
 #include "vecutil.h"
@@ -18,6 +19,7 @@
 #include "imagebuffer.h"
 #include "radiance_sample.h"
 #include "obj_file.h"
+#include "logger.h"
 
 
 // todo: add refractive material
@@ -28,6 +30,7 @@
 // todo: add support for live rendering
 // todo: add support for circular aperture
 // todo: add support for obj file name
+// todo: add benchmark object
 
 
 namespace po = boost::program_options;
@@ -44,13 +47,14 @@ void create_camera_load(scene& sc, radiance_buffer& rb)
   sc.add_camera(cam_pos, cam_up, cam_lookat, cam_focal, cam_hfov, cam_fstop, &rb);
 }
 
-void load_scene_obj(scene& sc, radiance_buffer& rb)
+void load_scene_obj(scene& sc, radiance_buffer& rb, const std::string& filepath)
 {
   bool allow_lights = true;
   if (!allow_lights)
     sc.lightsource().add_light(new pointlight(vec3f(0, 1.7, 0), color(1, 1, 1, 1.0), 1));
-  std::string filedir = "../data/";
-  std::string filename = "CornellBox-Original.obj";
+  boost::filesystem::path path(filepath);
+  std::string filedir = path.parent_path().string();
+  std::string filename = path.filename().string();
   obj_reader::read_obj_file(filedir, filename, sc, allow_lights);
 
   create_camera_load(sc, rb);
@@ -78,13 +82,24 @@ void image_pass(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
   }
 }
 
+bool validate_path_is_file(const std::string filepath)
+{
+  if (filepath.empty())
+    return true;
+  boost::filesystem::path p(filepath);
+  if (boost::filesystem::exists(p)) {
+    return boost::filesystem::is_regular_file(p);
+  }
+  return false;
+}
+
 int main(int argc, char** argv) {
   po::options_description desc("Allowed options");
   int samples;
-  std::string output_filename;
-  std::string input_filename;
-  bool only_radiance;
-  bool input_present = false;
+  std::string output_image_filename;
+  std::string output_radiance_filename;
+  std::string input_radiance_filename;
+  std::string input_scene_filename;
   int image_width, image_height;
   double image_gamma;
   bool continuous;
@@ -101,14 +116,17 @@ int main(int argc, char** argv) {
       ("samples", po::value<int>(&samples)->default_value(100000),
        "number of rays created")
 	 
-      ("input,I", po::value<std::string>(&input_filename),
+      ("input-scene,I", po::value<std::string>(&input_scene_filename),
+       "input scene file")
+
+      ("input-radiance", po::value<std::string>(&input_radiance_filename),
        "input radiance file")
 	 
-      ("output,O", po::value<std::string>(&output_filename)->required(),
+      ("output-image,O", po::value<std::string>(&output_image_filename),
        "output image file")
 
-      ("only-radiance,R", po::value<bool>(&only_radiance),
-       "only output radiance, not an image")
+      ("output-radiance", po::value<std::string>(&output_radiance_filename),
+       "output radiance file")
 
       ("image-width,W", po::value<int>(&image_width)->default_value(128),
        "width of the output image file")
@@ -116,13 +134,13 @@ int main(int argc, char** argv) {
       ("image-height,H", po::value<int>(&image_height)->default_value(128),
        "height of the output image file")
 	 
-      ("image-gamma,G", po::value<double>(&image_gamma)->default_value(2.2),
+      ("gamma", po::value<double>(&image_gamma)->default_value(2.2),
        "gamma of the output image file")
 
       ("continuous,C", po::value<bool>(&continuous)->default_value(false),
        "if true then this will run continuously")
  
-     ("max-bounce-rate", po::value<int>(&max_bounce_rate)->default_value(4),
+      ("max-bounce-rate", po::value<int>(&max_bounce_rate)->default_value(4),
        "max bounces of rays")
 
       ("threads", po::value<int>(&threads)->default_value(4),
@@ -133,6 +151,7 @@ int main(int argc, char** argv) {
 	 
       ("max-age", po::value<int>(&max_age)->default_value(10),
        "maximum age of rays to be included in image")
+
 	 
       ;
 
@@ -146,14 +165,38 @@ int main(int argc, char** argv) {
 
     po::notify(vm);
 
-    if (continuous && !only_radiance) {
-      std::cout << "have to specify only-radiance if running continuously"
-		<< std::endl;
+    if (input_radiance_filename.empty() && input_scene_filename.empty()) {
+      LOG_ERROR << "have to specify one type of input file.";
+      return 1;
+    }
+    if ((!input_radiance_filename.empty()) && (!input_scene_filename.empty())) {
+      LOG_ERROR << "cannot specify both a radiance and scene input file.";
       return 1;
     }
 
-    if (vm.count("input")) {
-      input_present = true;
+    if (output_image_filename.empty() && output_radiance_filename.empty()) {
+      LOG_ERROR << "have to specify at least one type of output file.";
+      return 1;
+    }
+
+    if (continuous && output_radiance_filename.empty()) {
+      LOG_ERROR << "have to specify a radiance output file if running continuously.";
+      return 1;
+    }
+    
+    if (continuous && input_scene_filename.empty()) {
+      LOG_ERROR << "have to specify the scene file if running continuously.";
+      return 1;
+    }
+
+    if (!validate_path_is_file(input_scene_filename)) {
+      LOG_ERROR << "input scene file does not exist or incorrect path.";
+      return 1;
+    }
+
+    if (!validate_path_is_file(input_radiance_filename)) {
+      LOG_ERROR << "input radiance file does not exist or incorrect path.";
+      return 1;
     }
 
   }
@@ -173,71 +216,74 @@ int main(int argc, char** argv) {
 
   //  try {
 
-    config::get_config().max_ray_age = max_bounce_rate;
+  config::get_config().max_ray_age = max_bounce_rate;
 
-    if (continuous) {
-      scene sc;
-      radiance_buffer rb;
-      load_scene_obj(sc, rb);
-      sc.initialize();
-      std::cout << "Camera focal: " << sc.get_camera().f() << std::endl;
-      while(true) {
-	render_pass(sc, 1000000, false, threads); 
-	std::ofstream rf(output_filename, std::ofstream::out | std::ofstream::app);
-	rf << rb;
-	std::cout << ".";
-	std::cout.flush();
-	rb.clear();
-      }
-    }
-
+  if (continuous) {
+    scene sc;
     radiance_buffer rb;
-    if (input_present) {
-      std::cout << "Reading radiance file from: " << input_filename << std::endl;
-      std::ifstream rf(input_filename, std::ifstream::in);
-      rf >> rb;
-    } else {
-      std::cout << "Rendering..." << std::endl;
-      scene sc;
-      load_scene_obj(sc, rb);
-      std::cout << "Camera focal: " << sc.get_camera().f() << std::endl;
-      std::cout << "Camera di: " << sc.get_camera().d_i() << std::endl;
-      std::cout << "Camera do: " << sc.get_camera().d_o() << std::endl;
-      std::cout << "Camera h: " << sc.get_camera().h() << std::endl;
-      std::cout << "Camera aperture: " << sc.get_camera().aperture() << std::endl;
-      
-      std::cout << "Initializing scene..." << std::endl;
-      sc.initialize();
-      
-      std::cout << "Render..." << std::endl;
-      auto t1 = std::chrono::high_resolution_clock::now();
-      
-      render_pass(sc, samples, true, threads);
-
-      auto t2 = std::chrono::high_resolution_clock::now();
-      std::cout << "Samples hit: " << sc.get_camera().counter() << std::endl;
-      auto dur_sec = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count();
-      auto dur_mil = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
-      std::cout << "Time: " << dur_sec << "." << dur_mil << std::endl;
-    }
-
-    if (only_radiance) {
-      std::cout << "Saving radiance file to: " << output_filename << std::endl;
-      std::ofstream rf(output_filename, std::ofstream::out);
+    load_scene_obj(sc, rb, input_scene_filename);
+    sc.initialize();
+    LOG_DEBUG << "Camera focal: " << sc.get_camera().f();
+    while(true) {
+      render_pass(sc, 1000000, false, threads); 
+      std::ofstream rf(output_radiance_filename,
+		       std::ofstream::out | std::ofstream::app);
       rf << rb;
-    } else {
-      imagebuffer ib(image_width, image_height);
-      image_pass(rb, ib, min_age, max_age);
-      std::cout << "Saving image file to: " << output_filename << std::endl;
-      ib.save(output_filename.c_str(), image_gamma);
+      std::cout << ".";
+      std::cout.flush();
+      rb.clear();
     }
-    /*
   }
-  catch(std::exception& e) {
+
+  radiance_buffer rb;
+  if (!input_radiance_filename.empty()) {
+    LOG_INFO << "Reading radiance file from: " << input_radiance_filename;
+    std::ifstream rf(input_radiance_filename, std::ifstream::in);
+    rf >> rb;
+  }
+
+  if (!input_scene_filename.empty()) {
+    LOG_INFO << "Rendering...";
+    scene sc;
+    load_scene_obj(sc, rb, input_scene_filename);
+    LOG_DEBUG << "Camera focal: " << sc.get_camera().f();
+    LOG_DEBUG << "Camera di: " << sc.get_camera().d_i();
+    LOG_DEBUG << "Camera do: " << sc.get_camera().d_o();
+    LOG_DEBUG << "Camera h: " << sc.get_camera().h();
+    LOG_DEBUG << "Camera aperture: " << sc.get_camera().aperture();
+    LOG_INFO << "Initializing scene...";
+    sc.initialize();
+
+    LOG_INFO << "Render...";
+    auto t1 = std::chrono::high_resolution_clock::now();
+      
+    render_pass(sc, samples, true, threads);
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+    LOG_DEBUG << "Samples hit: " << sc.get_camera().counter();
+    auto dur_sec = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count();
+    auto dur_mil = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+    LOG_INFO << "Time: " << dur_sec << "." << dur_mil;
+  }
+
+  if (!output_radiance_filename.empty()) {
+    LOG_INFO << "Saving radiance file to: " << output_radiance_filename;
+    std::ofstream rf(output_radiance_filename, std::ofstream::out);
+    rf << rb;
+  }
+  if (!output_image_filename.empty()) {
+    imagebuffer ib(image_width, image_height);
+    image_pass(rb, ib, min_age, max_age);
+    LOG_INFO << "Saving image file to: " << output_image_filename;
+    ib.save(output_image_filename.c_str(), image_gamma);
+  }
+  /*
+    }
+    catch(std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;
-  }
-  catch(...) {
+    }
+    catch(...) {
     std::cerr << "Unknown error!" << std::endl;
     return 1;
     }*/

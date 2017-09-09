@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
-
+#include "logger.h"
 #include "ilight.h"
 
 class lightsource
@@ -28,8 +28,8 @@ public:
     }
 
     void add_light(ilight* light) {
-      std::cout << "lightsource::add_light()" << std::endl;
-        _lights.push_back(std::unique_ptr<ilight>(light));
+      LOG_DEBUG << "lightsource::add_light()";
+      _lights.push_back(std::unique_ptr<ilight>(light));
     }
 
     bool empty() const {

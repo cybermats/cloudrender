@@ -5,6 +5,7 @@
 
 #include "vecmath.h"
 #include "triangle.h"
+#include "logger.h"
 
 class kd_tree
 {
@@ -212,11 +213,10 @@ class kd_tree
     }
 
     void print() {
-      std::cout << "kd_node(" << _depth << ") min: " << _bbox.bounds[0]
+      LOG_DEBUG << "kd_node(" << _depth << ") min: " << _bbox.bounds[0]
 		<< ", max: " << _bbox.bounds[1]
 	        << ", nodes: " << _triangles.size()
-	        << ", left: " << (left != nullptr) << ", right: " << (right != nullptr)
-		<< std::endl;
+	        << ", left: " << (left != nullptr) << ", right: " << (right != nullptr);
 
       if (left)
 	left->print();

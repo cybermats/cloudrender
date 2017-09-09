@@ -4,11 +4,11 @@
 
 intersection scene::intersect(ray& r)
 {
-#ifdef NO_ACCELERATOR  
-  auto hit = (triangle*)nullptr;
   auto t_min = std::numeric_limits<float>::max();
   auto u = 0.f;
   auto v = 0.f;
+#ifdef NO_ACCELERATOR  
+  auto hit = (triangle*)nullptr;
   for(auto& tri: _triangles) {
     auto t = tri.intersect(r, u, v);
     if (t > 0 && t < t_min) {
@@ -18,8 +18,7 @@ intersection scene::intersect(ray& r)
   }
 #else
 
-  float t_min;
-  auto hit = _tree.intersect(r, t_min);
+  auto hit = _tree.intersect(r, t_min, u, v);
 #endif
 
   auto normal = vec3f();

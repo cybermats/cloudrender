@@ -13,7 +13,7 @@
 #include "color.h"
 #include "matte_material.h"
 #include "trilight.h"
-
+#include "logger.h"
 
 namespace obj_reader
 {
@@ -177,7 +177,7 @@ namespace obj_reader
       // add triangle back to scene and setup lights if relevant.
       sc.add_triangle(tri);
       if (emissive != nullptr) {
-	std::cout << "adding light: " << *emissive << std::endl;
+	LOG_DEBUG << "adding light: " << *emissive;
 	sc.lightsource().add_light(new trilight(tri, *emissive, 1.f));
       }
       // move vertices around to create all triangles for face
@@ -189,8 +189,8 @@ namespace obj_reader
 
   void read_mtl_file(const std::string& dir, const std::string& filename,
 		     scene& sc, std::map<std::string, color>& emissives) {
-    std::string filepath = dir + filename;
-    std::cout << "read mtl file [" << filepath << "]..." << std::endl;
+    std::string filepath = dir + "/" + filename;
+    LOG_DEBUG << "read mtl file [" << filepath << "]...";
 
     std::ifstream stream(filepath, std::ifstream::in);
 
@@ -238,14 +238,13 @@ namespace obj_reader
     if (!first) {
       sc.material().add_material(mtl_name, new matte_material(c));
     }
-    std::cout << "read mtl file done." << std::endl;
   }
 
 
   void read_obj_file(const std::string& dir, const std::string& filename,
 		     scene& sc, bool allow_lights) {
-    std::string filepath = dir + filename;
-    std::cout << "read obj file [" << filepath << "]..." << std::endl;
+    std::string filepath = dir + "/" + filename;
+    LOG_DEBUG << "read obj file [" << filepath << "]..." << std::endl;
     
     std::ifstream stream(filepath, std::ifstream::in);
 
@@ -294,6 +293,5 @@ namespace obj_reader
 	}
       }
     }
-    std::cout << "read obj file done." << std::endl;
   }
 }

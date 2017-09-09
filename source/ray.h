@@ -8,6 +8,7 @@
 #include "vecutil.h"
 #include "color.h"
 #include "config.h"
+#include "logger.h"
 
 class ray
 {
@@ -27,11 +28,13 @@ class ray
     , _color(color)
     , _age(age)
   {
+#ifndef NDEBUG
     auto len = std::abs(_direction.length() - 1.);
     if (len > config::ERR) {
-      std::cout << "origin: " << origin << std::endl;
-      std::cout << "dir: " << direction << std::endl;
+      LOG_ERROR << "origin: " << origin;
+      LOG_ERROR << "dir: " << direction;
     }
+#endif
 			
     assert(std::abs(_direction.length() - 1.) < config::ERR);
 

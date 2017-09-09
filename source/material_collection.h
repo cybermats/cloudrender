@@ -11,14 +11,12 @@ class material_collection
  public:
   imaterial* add_material(const std::string& name, imaterial* material)
   {
-    std::cout << "adding material: [" << name << "]" <<  std::endl;
     _map[name] = std::unique_ptr<imaterial>(material);
     return material;
   }
 
   imaterial* lookup_material(const std::string& name)
   {
-    std::cout << "lookup material: [" << name << "]" << std::endl;
     return _map.at(name).get();
   }
   

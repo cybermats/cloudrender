@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex>
+#include "logger.h"
 
 class sampler
 {
@@ -30,7 +31,7 @@ public:
     {
       std::lock_guard<std::mutex> lg(_mtx);
         if (_counter < _break && _show_progress) {
-            std::cout << "[" << _progress << "%]" << std::endl;
+	  LOG_INFO << "[" << _progress << "%]";
             _progress += 100 / step_count;
             _break -= _step;
         }

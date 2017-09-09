@@ -12,6 +12,7 @@
 #include "vecmath.h"
 #include "config.h"
 #include "color.h"
+#include "logger.h"
 
 class matte_material : public imaterial
 {
@@ -52,13 +53,13 @@ class matte_material : public imaterial
 #ifndef NDEBUG
     auto tmp = std::abs(dir.length() - 1.);
     if (tmp > config::ERR) {
-      std::cout << "i.t: " << i.t << std::endl;
-      std::cout << "i.tri: " << *(i.tri) << std::endl;
-      std::cout << "i.normal: " << i.normal << std::endl;
-      std::cout << "i.normal.length: " << i.normal.length() << std::endl;
-      std::cout << "i.ray: " << i.ray << std::endl;
-      std::cout << "i.position: " << i.position << std::endl;
-      std::cout << "rot_mat: " << rot_mat << std::endl;
+      LOG_ERROR << "i.t: " << i.t;
+      LOG_ERROR << "i.tri: " << *(i.tri);
+      LOG_ERROR << "i.normal: " << i.normal;
+      LOG_ERROR << "i.normal.length: " << i.normal.length();
+      LOG_ERROR << "i.ray: " << i.ray;
+      LOG_ERROR << "i.position: " << i.position;
+      LOG_ERROR << "rot_mat: " << rot_mat;
     }
 #endif
     assert(std::abs(dir.length() - 1.) < config::ERR);
