@@ -15,6 +15,14 @@ private:
     vec3f _v1;
     vec3f _v2;
 
+    vec3f _nv0;
+    vec3f _nv1;
+    vec3f _nv2;
+
+    vec3f _tv0;
+    vec3f _tv1;
+    vec3f _tv2;
+
     vec3f _normal;
 
     imaterial* _material;
@@ -27,11 +35,32 @@ public:
     {
         _normal = (_v1 - _v0).cross(_v2 - _v0);
         _normal = _normal * ( 1 / _normal.length());
+	_nv0 = _nv1 = _nv2 = _normal;
     }
+
+    void set_vertex_normals(const vec3f& nv0, const vec3f& nv1, const vec3f& nv2)
+    {
+      _nv0 = nv0;
+      _nv1 = nv1;
+      _nv2 = nv2;
+    }
+
+    void set_vertex_textures(const vec3f& tv0, const vec3f& tv1, const vec3f& tv2)
+    {
+      _tv0 = tv0;
+      _tv1 = tv1;
+      _tv2 = tv2;
+    }
+    
 
     const vec3f& normal() const 
     {
         return _normal;
+    }
+
+    const vec3f normal(float u, float v) const 
+    {
+      return (((1.f - u - v) * _nv0) + (u * _nv1) + (v * _nv2)).normalize();
     }
 
     imaterial* material() const
@@ -39,7 +68,7 @@ public:
         return _material;
     }
 
-    float intersect(const ray& r) 
+    float intersect(const ray& r, float& u, float& v) 
     {
         auto e1 = _v1 - _v0;
         auto e2 = _v2 - _v0;
@@ -53,13 +82,13 @@ public:
 
         auto inv_det = 1 / det;
         auto tvec = r.origin() - _v0;
-        auto u = tvec.dot(pvec) * inv_det;
+        u = tvec.dot(pvec) * inv_det;
         if (u < 0 || u > 1) {
             return 0;
         }
 
         auto qvec = tvec.cross(e1);
-        auto v = r.direction().dot(qvec) * inv_det;
+        v = r.direction().dot(qvec) * inv_det;
         if (v < 0 || u + v > 1) {
             return 0;
         }

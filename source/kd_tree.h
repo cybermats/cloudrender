@@ -168,7 +168,7 @@ class kd_tree
       right = new kd_node(right_tris, _depth + 1);
     }
 
-    triangle* intersect(const ray& r, float &t) {
+    triangle* intersect(const ray& r, float &t, float &u, float &v) {
       if (!_bbox.intersect(r))
 	return nullptr;
       triangle* hit_left = nullptr;
@@ -176,9 +176,9 @@ class kd_tree
       float tl;
       float tr;
       if (left)
-	hit_left = left->intersect(r, tl);
+	hit_left = left->intersect(r, tl, u, v);
       if (right)
-	hit_right = right->intersect(r, tr);
+	hit_right = right->intersect(r, tr, u, v);
       if (hit_left && hit_right) {
 	if (tl < tr) {
 	  t = tl;
@@ -201,7 +201,7 @@ class kd_tree
       auto hit = (triangle*)nullptr;
       t = std::numeric_limits<float>::max();
       for(auto tri: _triangles) {
-	auto t_t = tri->intersect(r);
+	auto t_t = tri->intersect(r, u, v);
 	if (t_t > 0 && t_t < t) {
 	  t = t_t;
 	  hit = tri;
@@ -255,10 +255,10 @@ class kd_tree
     _root->print();
   }
 
-  triangle* intersect(const ray& r, float &t) {
+  triangle* intersect(const ray& r, float &t, float &u, float &v) {
     assert(_initialized);
     if (_root)
-      return _root->intersect(r, t);
+      return _root->intersect(r, t, u, v);
     return nullptr;
   }
   

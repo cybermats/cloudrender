@@ -7,8 +7,10 @@ intersection scene::intersect(ray& r)
 #ifdef NO_ACCELERATOR  
   auto hit = (triangle*)nullptr;
   auto t_min = std::numeric_limits<float>::max();
+  auto u = 0.f;
+  auto v = 0.f;
   for(auto& tri: _triangles) {
-    auto t = tri.intersect(r);
+    auto t = tri.intersect(r, u, v);
     if (t > 0 && t < t_min) {
       t_min = t;
       hit = &tri;
@@ -23,7 +25,7 @@ intersection scene::intersect(ray& r)
   auto normal = vec3f();
   auto position = vec3f();
   if (hit) {
-    normal = hit->normal();
+    normal = hit->normal(u, v);
     position = r.origin() + r.direction() * t_min;
   } else {
     t_min = -1;

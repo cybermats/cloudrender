@@ -49,15 +49,18 @@ class matte_material : public imaterial
 
     assert(std::abs(dir.length() - 1.) < config::ERR);
     dir = rot_mat * dir;
+#ifndef NDEBUG
     auto tmp = std::abs(dir.length() - 1.);
     if (tmp > config::ERR) {
       std::cout << "i.t: " << i.t << std::endl;
       std::cout << "i.tri: " << *(i.tri) << std::endl;
       std::cout << "i.normal: " << i.normal << std::endl;
+      std::cout << "i.normal.length: " << i.normal.length() << std::endl;
       std::cout << "i.ray: " << i.ray << std::endl;
       std::cout << "i.position: " << i.position << std::endl;
       std::cout << "rot_mat: " << rot_mat << std::endl;
     }
+#endif
     assert(std::abs(dir.length() - 1.) < config::ERR);
     return ray(i.position + dir * config::ERR,
 	       dir,

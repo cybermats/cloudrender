@@ -20,15 +20,25 @@
 #include "obj_file.h"
 
 
+// todo: add refractive material
+// todo: add reflective material
+// todo: add texture mapping
+// todo: add config file
+// todo: add support for openexr
+// todo: add support for live rendering
+// todo: add support for circular aperture
+// todo: add support for obj file name
+
+
 namespace po = boost::program_options;
 
 void create_camera_load(scene& sc, radiance_buffer& rb)
 {
-  vec3f cam_pos(0, 1, 1);
+  vec3f cam_pos(0, 1, 4);
   vec3f cam_up(0, 1, 0);
   vec3f cam_lookat(0, 1, 0);
   float cam_focal = 0.0350;
-  float cam_hfov = 4;
+  float cam_hfov = 3;
   float cam_fstop = 0.5f;
 
   sc.add_camera(cam_pos, cam_up, cam_lookat, cam_focal, cam_hfov, cam_fstop, &rb);
