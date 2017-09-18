@@ -39,6 +39,24 @@ class imagebuffer_t
     _buffer[y * _width + x] += v;
   }
 
+  void add(float u, float v, const color_t& c) {
+    auto fx = u * _width;
+    auto fy = v * _height;
+    auto x = (int)fx;
+    auto y = (int)fy;
+    auto xf = fx - x;
+    auto yf = fy - y;
+    _buffer[y * _width + x] += ((1.f - xf) * (1.f - yf) * c);
+    if (x < _width-1)
+      _buffer[y * _width + x + 1] = (xf * (1.f - yf) * c);
+    if (y < _height-1)
+      _buffer[(y+1) * _width + x] = ((1.f - xf) * yf * c);
+    if (y < _height-1 && x < _width-1)
+      _buffer[(y+1) * _width + x + 1] = (xf * yf * c);
+     
+    
+  }
+
   size_t width() const {
     return _width;
   }
@@ -52,8 +70,8 @@ class imagebuffer_t
     std::lock_guard<std::mutex> lg(_mtx);
     auto max = 0.f;
     for (auto& c: _buffer) {
-      if (c.a > max)
-	max = c.a;
+      if (c.intensity() > max)
+	max = c.intensity();
     }
       
     std::ofstream f(filename, std::ofstream::out | std::ofstream::binary);
