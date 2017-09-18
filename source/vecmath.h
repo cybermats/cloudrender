@@ -38,11 +38,11 @@ vec2(const T& x, const T& y)
     }
   }
 
-  vec2<T> operator+(const vec2<T> other) const {
+  vec2<T> operator+(const vec2<T>& other) const {
     return vec2<T>(x + other.x, y + other.y);
   }
 
-  vec2<T> operator-(const vec2<T> other) const {
+  vec2<T> operator-(const vec2<T>& other) const {
     return vec2<T>(x - other.x, y - other.y);
   }
 
@@ -60,12 +60,12 @@ vec2(const T& x, const T& y)
 };
 
 template <class VecT, class ValT>
-  vec2<VecT> operator*(const vec2<VecT> vec, const ValT& val) {
+  vec2<VecT> operator*(const vec2<VecT>& vec, const ValT& val) {
   return vec2<VecT>(vec.x * val, vec.y * val);
 }
 
 template <class VecT, class ValT>
-  vec2<VecT> operator*(const ValT& val, const vec2<VecT> vec) {
+  vec2<VecT> operator*(const ValT& val, const vec2<VecT>& vec) {
   return vec2<VecT>(vec.x * val, vec.y * val);
 }
 
@@ -114,18 +114,18 @@ vec3(const T& x, const T& y, const T& z)
     }
   }
 
-  vec3<T> operator+(const vec3<T> other) const {
+  vec3<T> operator+(const vec3<T>& other) const {
     return vec3<T>(x + other.x, y + other.y, z + other.z);
   }
 
-  vec3<T>& operator+=(const vec3<T> other) {
+  vec3<T>& operator+=(const vec3<T>& other) {
     x += other.x;
     y += other.y;
     z += other.z;
     return *this;
   }
 
-  vec3<T> operator-(const vec3<T> other) const {
+  vec3<T> operator-(const vec3<T>& other) const {
     return vec3<T>(x - other.x, y - other.y, z - other.z);
   }
 
@@ -137,7 +137,7 @@ vec3(const T& x, const T& y, const T& z)
     return sqrt(x*x + y*y + z*z);
   }
 
-  T dot(const vec3<T> other) const {
+  T dot(const vec3<T>& other) const {
     return x * other.x + y * other.y + z * other.z;
   }
 
@@ -146,7 +146,7 @@ vec3(const T& x, const T& y, const T& z)
     return *this * inv_len;
   }
 
-  vec3<T> cross(const vec3<T> other) const {
+  vec3<T> cross(const vec3<T>& other) const {
     return vec3<T>(
 		   y * other.z - z * other.y,
 		   z * other.x - x * other.z,
@@ -156,17 +156,17 @@ vec3(const T& x, const T& y, const T& z)
 };
 
 template <class VecT, class ValT>
-  vec3<VecT> operator*(const vec3<VecT> vec, const ValT& val) {
+  vec3<VecT> operator*(const vec3<VecT>& vec, const ValT& val) {
   return vec3<VecT>(vec.x * val, vec.y * val, vec.z * val);
 }
 
 template <class VecT, class ValT>
-  vec3<VecT> operator*(const ValT& val, const vec3<VecT> vec) {
+  vec3<VecT> operator*(const ValT& val, const vec3<VecT>& vec) {
   return vec3<VecT>(vec.x * val, vec.y * val, vec.z * val);
 }
 
 template <class VecT, class ValT>
-  vec3<VecT> operator/(const vec3<VecT> vec, const ValT& val) {
+  vec3<VecT> operator/(const vec3<VecT>& vec, const ValT& val) {
   auto tmp = 1.f / val;
   return vec3<VecT>(vec.x * tmp, vec.y * tmp, vec.z * tmp);
 }
