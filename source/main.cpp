@@ -29,9 +29,11 @@
 // todo: add support for openexr
 // todo: add support for live rendering
 // todo: add support for circular aperture
-// todo: add support for obj file name
 // todo: add benchmark object
+// todo: look over the accelerator
 
+// done:
+// done: add support for obj file name
 
 namespace po = boost::program_options;
 
@@ -67,7 +69,7 @@ void render_pass(scene& sc, int samples, bool show_progress, int threads)
   r.run(threads);
 }
 
-void image_pass(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
+void image_pass_direct(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
 {
   for(auto& s : rb) {
     int x = ((s.plate_pos.x + 1) / 2.f) * ib.width();
@@ -78,6 +80,21 @@ void image_pass(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
 
     if (s.ray_age >= min_age && s.ray_age <= max_age) {
       ib.inc(x, y, s.color);
+    }
+  }
+}
+
+void image_pass_tent(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
+{
+  for(auto& s : rb) {
+    auto u = (s.plate_pos.x + 1.f) / 2.f;
+    auto v = (s.plate_pos.y + 1.f) / 2.f;
+
+    u = std::max(std::min(u, 1.f), 0.f);
+    v = std::max(std::min(v, 1.f), 0.f);
+
+    if (s.ray_age >= min_age && s.ray_age <= max_age) {
+      ib.add(u, v, s.color);
     }
   }
 }
@@ -225,7 +242,7 @@ int main(int argc, char** argv) {
     sc.initialize();
     LOG_DEBUG << "Camera focal: " << sc.get_camera().f();
     while(true) {
-      render_pass(sc, 1000000, false, threads); 
+      render_pass(sc, samples, false, threads); 
       std::ofstream rf(output_radiance_filename,
 		       std::ofstream::out | std::ofstream::app);
       rf << rb;
@@ -273,7 +290,7 @@ int main(int argc, char** argv) {
   }
   if (!output_image_filename.empty()) {
     imagebuffer ib(image_width, image_height);
-    image_pass(rb, ib, min_age, max_age);
+    image_pass_direct(rb, ib, min_age, max_age);
     LOG_INFO << "Saving image file to: " << output_image_filename;
     ib.save(output_image_filename.c_str(), image_gamma);
   }
