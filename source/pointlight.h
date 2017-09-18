@@ -12,7 +12,7 @@ class pointlight : public ilight
 {
 private:
     vec3f _origin;
-    color _color;
+    color_t _color;
     float _relevance;
 
     std::mt19937 _gen;
@@ -20,7 +20,7 @@ private:
     std::uniform_real_distribution<> _u_dis;
     
 public:
-    pointlight(const vec3f& origin, const color& color, float relevance)
+    pointlight(const vec3f& origin, const color_t& color, float relevance)
     : _origin(origin), _color(color)
     , _relevance(relevance)
     , _gen(std::random_device()())
@@ -28,7 +28,7 @@ public:
       , _u_dis(-1, std::nextafter(1, 2))
     {}
 
-    virtual ray generate_ray() override 
+    virtual ray_t generate_ray() override 
     {
         auto theta = _theta_dis(_gen);
         auto u = _u_dis(_gen);
@@ -40,7 +40,7 @@ public:
             u
         );
 	
-        return ray(_origin, dir, _color);
+        return ray_t(_origin, dir, _color);
     }
 
     virtual float relevance() const override {

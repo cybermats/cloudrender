@@ -10,18 +10,18 @@
 #include "config.h"
 #include "logger.h"
 
-class ray
+class ray_t
 {
  private:
   vec3f _origin;
   vec3f _direction;
   vec3f _inv_direction;
-  color _color;
+  color_t _color;
   int _age;
   int _sign[3];
 
  public:
- ray(const vec3f& origin, const vec3f& direction, const color& color, int age = 0) 
+ ray_t(const vec3f& origin, const vec3f& direction, const color_t& color, int age = 0) 
    : _origin(origin)
     , _direction(direction)
     , _inv_direction(1/direction.x, 1/direction.y, 1/direction.z)
@@ -44,7 +44,7 @@ class ray
     _sign[2] = (_inv_direction.z < 0);
   }
 
- ray()
+ ray_t()
     : _age(config::get_config().max_ray_age)
     {}
 
@@ -64,7 +64,7 @@ class ray
     return _sign;
   }
 
-  const color& color() const {
+  const color_t& color() const {
     return _color;
   }
 
@@ -77,4 +77,4 @@ class ray
   }
 };
 
-std::ostream& operator<<(std::ostream& stream, const ray& r);
+std::ostream& operator<<(std::ostream& stream, const ray_t& r);

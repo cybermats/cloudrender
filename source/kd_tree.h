@@ -37,12 +37,12 @@ class kd_tree
       bounds[1] = vmax;
     }
 
-    bbox(const triangle* tri) {
+    bbox(const triangle_t* tri) {
       bounds[0] = min(min(tri->v0(), tri->v1()), tri->v2());
       bounds[1] = max(max(tri->v0(), tri->v1()), tri->v2());
     }
 
-    void expand(const triangle* tri) {
+    void expand(const triangle_t* tri) {
       auto tri_box = bbox(tri);
       bounds[0] = min(bounds[0], tri_box.bounds[0]);
       bounds[1] = max(bounds[1], tri_box.bounds[1]);
@@ -61,7 +61,7 @@ class kd_tree
       return axis;
     }
 
-    bool intersect(const ray &r) const
+    bool intersect(const ray_t &r) const
     {
       const auto& inv_dir = r.inv_direction();
       const auto* sign = r.sign();
@@ -97,7 +97,7 @@ class kd_tree
     bbox _bbox;
     kd_node* left = nullptr;
     kd_node* right = nullptr;
-    std::vector<triangle*> _triangles;
+    std::vector<triangle_t*> _triangles;
     int _depth;
 
   public:
@@ -108,7 +108,7 @@ class kd_tree
 	delete right;
     }
     
-  kd_node(const std::vector<triangle*> tris, int depth)
+  kd_node(const std::vector<triangle_t*> tris, int depth)
     : _bbox()
       , left(nullptr)
       , right(nullptr)
@@ -135,8 +135,8 @@ class kd_tree
       
       mid = mid  / _triangles.size();
 
-      std::vector<triangle*> left_tris;
-      std::vector<triangle*> right_tris;
+      std::vector<triangle_t*> left_tris;
+      std::vector<triangle_t*> right_tris;
       int axis = _bbox.longest_axis();
       for(auto tri : _triangles) {
 	const auto i_mid = tri->midpoint();
@@ -169,11 +169,11 @@ class kd_tree
       right = new kd_node(right_tris, _depth + 1);
     }
 
-    triangle* intersect(const ray& r, float &t, float &u, float &v) {
+    triangle_t* intersect(const ray_t& r, float &t, float &u, float &v) {
       if (!_bbox.intersect(r))
 	return nullptr;
-      triangle* hit_left = nullptr;
-      triangle* hit_right = nullptr;
+      triangle_t* hit_left = nullptr;
+      triangle_t* hit_right = nullptr;
       float tl;
       float tr;
       if (left)
@@ -199,7 +199,7 @@ class kd_tree
 	return hit_right;
       }
 
-      auto hit = (triangle*)nullptr;
+      auto hit = (triangle_t*)nullptr;
       t = std::numeric_limits<float>::max();
       for(auto tri: _triangles) {
 	auto t_t = tri->intersect(r, u, v);
@@ -225,7 +225,7 @@ class kd_tree
     }
   };
 
-  std::vector<triangle*> _triangles;
+  std::vector<triangle_t*> _triangles;
   bool _initialized;
   kd_node* _root;
   
@@ -243,7 +243,7 @@ class kd_tree
       delete tri;
   }
 
-  void add_triangle(triangle* tri) {
+  void add_triangle(triangle_t* tri) {
     assert(!_initialized);
     _triangles.push_back(tri);
   }
@@ -255,7 +255,7 @@ class kd_tree
     _root->print();
   }
 
-  triangle* intersect(const ray& r, float &t, float &u, float &v) {
+  triangle_t* intersect(const ray_t& r, float &t, float &u, float &v) {
     assert(_initialized);
     if (_root)
       return _root->intersect(r, t, u, v);

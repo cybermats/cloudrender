@@ -2,7 +2,7 @@
 
 #include "vecutil.h"
 
-std::ostream& operator<<(std::ostream& stream, const color& c) {
+std::ostream& operator<<(std::ostream& stream, const color_t& c) {
     stream << "color(" 
         << c.r << "," << c.g << "," << c.b << "," << c.a << ")";
     return stream;

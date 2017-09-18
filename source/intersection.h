@@ -1,12 +1,12 @@
 #pragma once
 
-class triangle;
+class triangle_t;
 
-struct intersection
+struct intersection_t
 {
     float t;
-    triangle* tri;
+    triangle_t* tri;
     vec3f normal;
-    ray* ray;
+    ray_t* ray;
     vec3f position;
 };

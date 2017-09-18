@@ -19,7 +19,7 @@ std::ostream& operator<<(std::ostream& stream, const vec3<T>& vec) {
     return stream;
 }
 
-std::ostream& operator<<(std::ostream& stream, const color& c);
+std::ostream& operator<<(std::ostream& stream, const color_t& c);
 std::ostream& operator<<(std::ostream& stream, const matrix3f& m);
 
 matrix3f find_rotation_matrix(const vec3f& a, const vec3f& b);

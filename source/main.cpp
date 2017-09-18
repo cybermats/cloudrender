@@ -37,7 +37,7 @@
 
 namespace po = boost::program_options;
 
-void create_camera_load(scene& sc, radiance_buffer& rb)
+void create_camera_load(scene_t& sc, radiance_buffer& rb)
 {
   vec3f cam_pos(0, 1, 4);
   vec3f cam_up(0, 1, 0);
@@ -49,11 +49,11 @@ void create_camera_load(scene& sc, radiance_buffer& rb)
   sc.add_camera(cam_pos, cam_up, cam_lookat, cam_focal, cam_hfov, cam_fstop, &rb);
 }
 
-void load_scene_obj(scene& sc, radiance_buffer& rb, const std::string& filepath)
+void load_scene_obj(scene_t& sc, radiance_buffer& rb, const std::string& filepath)
 {
   bool allow_lights = true;
   if (!allow_lights)
-    sc.lightsource().add_light(new pointlight(vec3f(0, 1.7, 0), color(1, 1, 1, 1.0), 1));
+    sc.lightsource().add_light(new pointlight(vec3f(0, 1.7, 0), color_t(1, 1, 1, 1.0), 1));
   boost::filesystem::path path(filepath);
   std::string filedir = path.parent_path().string();
   std::string filename = path.filename().string();
@@ -62,14 +62,14 @@ void load_scene_obj(scene& sc, radiance_buffer& rb, const std::string& filepath)
   create_camera_load(sc, rb);
 }
 
-void render_pass(scene& sc, int samples, bool show_progress, int threads)
+void render_pass(scene_t& sc, int samples, bool show_progress, int threads)
 {
   sampler sa(samples, show_progress);
-  render r(&sc, &sa);
+  render_t r(&sc, &sa);
   r.run(threads);
 }
 
-void image_pass_direct(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
+void image_pass_direct(radiance_buffer& rb, imagebuffer_t& ib, int min_age, int max_age)
 {
   for(auto& s : rb) {
     int x = ((s.plate_pos.x + 1) / 2.f) * ib.width();
@@ -84,7 +84,7 @@ void image_pass_direct(radiance_buffer& rb, imagebuffer& ib, int min_age, int ma
   }
 }
 
-void image_pass_tent(radiance_buffer& rb, imagebuffer& ib, int min_age, int max_age)
+void image_pass_tent(radiance_buffer& rb, imagebuffer_t& ib, int min_age, int max_age)
 {
   for(auto& s : rb) {
     auto u = (s.plate_pos.x + 1.f) / 2.f;
@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
   config::get_config().max_ray_age = max_bounce_rate;
 
   if (continuous) {
-    scene sc;
+    scene_t sc;
     radiance_buffer rb;
     load_scene_obj(sc, rb, input_scene_filename);
     sc.initialize();
@@ -261,7 +261,7 @@ int main(int argc, char** argv) {
 
   if (!input_scene_filename.empty()) {
     LOG_INFO << "Rendering...";
-    scene sc;
+    scene_t sc;
     load_scene_obj(sc, rb, input_scene_filename);
     LOG_DEBUG << "Camera focal: " << sc.get_camera().f();
     LOG_DEBUG << "Camera di: " << sc.get_camera().d_i();
@@ -289,7 +289,7 @@ int main(int argc, char** argv) {
     rf << rb;
   }
   if (!output_image_filename.empty()) {
-    imagebuffer ib(image_width, image_height);
+    imagebuffer_t ib(image_width, image_height);
     image_pass_direct(rb, ib, min_age, max_age);
     LOG_INFO << "Saving image file to: " << output_image_filename;
     ib.save(output_image_filename.c_str(), image_gamma);

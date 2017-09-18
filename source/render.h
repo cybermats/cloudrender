@@ -6,14 +6,14 @@
 
 #include <future>
 
-class render
+class render_t
 {
  private:
-  scene* _scene;
+  scene_t* _scene;
   sampler* _sampler;
 
  public:
- render(scene* scene, sampler* sampler)
+ render_t(scene_t* scene, sampler* sampler)
    : _scene(scene)
     , _sampler(sampler)
   {}

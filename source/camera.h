@@ -7,9 +7,9 @@
 #include "ray.h"
 #include "imaterial.h"
 
-class scene;
+class scene_t;
 
-class camera : public imaterial
+class camera_t : public imaterial
 {
  private:
   int _counter;
@@ -32,15 +32,15 @@ class camera : public imaterial
 	 radiance_buffer* rb);
   */
 
-  camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
+  camera_t(const vec3f& position, const vec3f& up, const vec3f& lookat,
 	 float focal, float hfov, float fstop,
 	 radiance_buffer* rb);
 
-  void setup_scene(scene& s);
+  void setup_scene(scene_t& s);
 
-  bool lens_equation(const intersection& i, vec2f& uv);
+  bool lens_equation(const intersection_t& i, vec2f& uv);
 
-  virtual ray shade(const intersection& i);
+  virtual ray_t shade(const intersection_t& i);
 
   int counter() {
     return _counter;

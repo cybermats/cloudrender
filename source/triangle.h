@@ -8,7 +8,7 @@
 #include "config.h"
 #include "imaterial.h"
 
-class triangle 
+class triangle_t
 {
 private:
     vec3f _v0;
@@ -27,10 +27,10 @@ private:
 
     imaterial* _material;
 
-    friend std::ostream& operator<<(std::ostream& stream, const triangle& tri);
+    friend std::ostream& operator<<(std::ostream& stream, const triangle_t& tri);
 
 public:
-    triangle(const vec3f& v0, const vec3f& v1, const vec3f& v2, imaterial* material)
+    triangle_t(const vec3f& v0, const vec3f& v1, const vec3f& v2, imaterial* material)
     : _v0(v0), _v1(v1), _v2(v2), _material(material)
     {
         _normal = (_v1 - _v0).cross(_v2 - _v0);
@@ -68,7 +68,7 @@ public:
         return _material;
     }
 
-    float intersect(const ray& r, float& u, float& v) 
+    float intersect(const ray_t& r, float& u, float& v) 
     {
         auto e1 = _v1 - _v0;
         auto e2 = _v2 - _v0;
@@ -112,4 +112,4 @@ public:
 
 };
 
-std::ostream& operator<<(std::ostream& stream, const triangle& tri);
+std::ostream& operator<<(std::ostream& stream, const triangle_t& tri);

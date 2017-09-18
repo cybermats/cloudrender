@@ -12,7 +12,7 @@
 class trilight : public ilight
 {
  private:
-  color _color;
+  color_t _color;
   float _relevance;
   std::mt19937 _gen;
   std::uniform_real_distribution<float> _u;
@@ -27,7 +27,7 @@ class trilight : public ilight
   
  public:
 
-  trilight(const triangle& tri, const color& color, float relevance)
+  trilight(const triangle_t& tri, const color_t& color, float relevance)
     : _color(color), _relevance(relevance)
     , _gen(std::random_device()())
     , _u(0, 1)
@@ -40,7 +40,7 @@ class trilight : public ilight
   {}
 
  
-  virtual ray generate_ray() override {
+  virtual ray_t generate_ray() override {
     auto u = _u(_gen);
     auto v = _v(_gen);
 
@@ -62,7 +62,7 @@ class trilight : public ilight
 
     auto orig = _position + (u * _v1) + (v * _v2) + (dir * config::ERR);
 
-    return ray(orig, dir, _color);
+    return ray_t(orig, dir, _color);
   }
 
   virtual float relevance() const override {

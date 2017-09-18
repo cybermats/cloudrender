@@ -3,10 +3,10 @@
 #include "vecmath.h"
 #include "ray.h"
 
-struct intersection;
+struct intersection_t;
 
 class imaterial
 {
 public:
-    virtual ray shade(const intersection& r) = 0;
+    virtual ray_t shade(const intersection_t& r) = 0;
 };

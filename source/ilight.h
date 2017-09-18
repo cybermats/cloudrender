@@ -6,6 +6,6 @@
 class ilight
 {
 public:
-    virtual ray generate_ray() = 0;
+    virtual ray_t generate_ray() = 0;
     virtual float relevance() const = 0;
 };

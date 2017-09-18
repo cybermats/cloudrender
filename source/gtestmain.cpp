@@ -13,14 +13,14 @@ protected:
   float focal = 0.5;
   float hfov = 0.25;
   float fstop = 1;
-  cam = new camera(position, up, lookat, focal, hfov, fstop, nullptr);
+  cam = new camera_t(position, up, lookat, focal, hfov, fstop, nullptr);
   }
 
   virtual void TearDown() {
     delete cam;
   }
 
-  camera *cam;
+  camera_t *cam;
 };
 
 class CameraTestOff : public ::testing::Test {
@@ -32,14 +32,14 @@ protected:
   float focal = 0.5;
   float hfov = 0.1;
   float fstop = 1;
-  cam = new camera(position, up, lookat, focal, hfov, fstop, nullptr);
+  cam = new camera_t(position, up, lookat, focal, hfov, fstop, nullptr);
   }
 
   virtual void TearDown() {
     delete cam;
   }
 
-  camera *cam;
+  camera_t *cam;
 };
 
 ::testing::AssertionResult compare_vec(const char* m_expr, const char* n_expr,
@@ -73,8 +73,8 @@ TEST_F(CameraTestSimple, lens_eq_center_center) {
   auto pos = vec3f(0.0, 0.0, 0);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(0, 0);
@@ -87,8 +87,8 @@ TEST_F(CameraTestSimple, lens_eq_off_center) {
   auto pos = vec3f(0.1, 0.1, 0);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(0, 0);
@@ -101,8 +101,8 @@ TEST_F(CameraTestSimple, lens_eq_center_off) {
   auto pos = vec3f(0, 0, 0);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(0.01, -0.01);
@@ -117,8 +117,8 @@ TEST_F(CameraTestSimple, lens_eq_off_off) {
   auto pos = vec3f(0.1, 0.1, 0);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(0, -0.01);
@@ -131,8 +131,8 @@ TEST_F(CameraTestOff, lens_eq_center_center) {
   auto pos = vec3f(0, 0, 1);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(0, 0);
@@ -145,8 +145,8 @@ TEST_F(CameraTestOff, lens_eq_off_center) {
   auto pos = vec3f(0.1, 0.1, 1);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(0, 0);
@@ -159,8 +159,8 @@ TEST_F(CameraTestOff, lens_eq_center_off) {
   auto pos = vec3f(0, 0, 1);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(-0.01, -0.01);
@@ -173,8 +173,8 @@ TEST_F(CameraTestOff, lens_eq_off_off) {
   auto pos = vec3f(0.1, 0.1, 1);
 
   auto dir = (pos - orig).normalize();
-  auto r = ray{{},dir,{},0};
-  auto i = intersection{0, nullptr, {}, &r, pos};
+  auto r = ray_t{{},dir,{},0};
+  auto i = intersection_t{0, nullptr, {}, &r, pos};
 
   vec2f act;
   auto exp = vec2f(-0.01, -0.01);
@@ -186,7 +186,7 @@ TEST(Triangle, Midpoint) {
   vec3f v0(0, 1, 0);
   vec3f v1(0, 1, 1);
   vec3f v2(1, 1, 1);
-  triangle tri(v0, v1, v2, nullptr);
+  triangle_t tri(v0, v1, v2, nullptr);
 
   vec3f exp(1.f/3.f, 1, 2.f/3.f);
   vec3f act = tri.midpoint();

@@ -12,5 +12,5 @@ namespace obj_reader
 {
   
   void read_obj_file(const std::string& dir, const std::string& filename,
-		     scene& sc, bool allow_lights);
+		     scene_t& sc, bool allow_lights);
 };

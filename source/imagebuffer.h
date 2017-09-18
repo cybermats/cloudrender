@@ -8,33 +8,33 @@
 #include "vecmath.h"
 #include "color.h"
 
-class imagebuffer
+class imagebuffer_t
 {
  private:
   size_t _width;
   size_t _height;
 
-  std::vector<color> _buffer;
+  std::vector<color_t> _buffer;
 
   std::mutex _mtx;
 
  public:
- imagebuffer(size_t width, size_t height)
+ imagebuffer_t(size_t width, size_t height)
    : _width(width), _height(height)
     , _buffer((size_t) width * height)
     {}
 
-  void set(size_t x, size_t y, const color& v) {
+  void set(size_t x, size_t y, const color_t& v) {
     std::lock_guard<std::mutex> lg(_mtx);
     _buffer[y * _width + x] = v;
   }
 
-  color& get(size_t x, size_t y) {
+  color_t& get(size_t x, size_t y) {
     std::lock_guard<std::mutex> lg(_mtx);
     return _buffer[y * _width + x];
   }
 
-  void inc(size_t x, size_t y, const color& v) {
+  void inc(size_t x, size_t y, const color_t& v) {
     std::lock_guard<std::mutex> lg(_mtx);
     _buffer[y * _width + x] += v;
   }

@@ -105,13 +105,13 @@ namespace obj_reader
     
   }
 
-  static void read_face(scene& sc,
+  static void read_face(scene_t& sc,
 			std::vector<vec3f>& vertices,
 			std::vector<vec3f>& textures,
 			std::vector<vec3f>& normals,
 			std::vector<std::string>& items,
 			imaterial* material,
-			color *emissive)
+			color_t *emissive)
   {
     assert(items.size() >= 4);
     assert(material);
@@ -153,7 +153,7 @@ namespace obj_reader
     for(; it != face_info.end(); ++it) {
       // generate triangle for part of face
       auto i3 = (*it)[face_item_type::vertex];
-      auto tri = triangle(get_vec(vertices, i1),
+      auto tri = triangle_t(get_vec(vertices, i1),
 			  get_vec(vertices, i2),
 			  get_vec(vertices, i3),
 			  material);
@@ -188,14 +188,14 @@ namespace obj_reader
   }
 
   void read_mtl_file(const std::string& dir, const std::string& filename,
-		     scene& sc, std::map<std::string, color>& emissives) {
+		     scene_t& sc, std::map<std::string, color_t>& emissives) {
     std::string filepath = dir + "/" + filename;
     LOG_DEBUG << "read mtl file [" << filepath << "]...";
 
     std::ifstream stream(filepath, std::ifstream::in);
 
     std::string mtl_name;
-    color c;
+    color_t c;
     bool first = true;
 
     for (std::string line; std::getline(stream, line);) {
@@ -213,20 +213,20 @@ namespace obj_reader
 	  sc.material().add_material(mtl_name, new matte_material(c));
 	}
 	mtl_name = items[1];
-	c = color(0, 0, 0);
+	c = color_t(0, 0, 0);
 	first = false;
       }
       else if(items[0] == "Kd") {
 	assert(!first);
 	assert(items.size() >= 4);
-	c = color(std::stof(items[1]),
+	c = color_t(std::stof(items[1]),
 		  std::stof(items[2]),
 		  std::stof(items[3]));
       }
       else if(items[0] == "Ke") {
 	assert(!first);
 	assert(items.size() >= 4);
-	auto ec = color(std::stof(items[1]),
+	auto ec = color_t(std::stof(items[1]),
 			std::stof(items[2]),
 			std::stof(items[3]));
 	if (ec.r > 0 && ec.g > 0 && ec.b > 0) {
@@ -242,7 +242,7 @@ namespace obj_reader
 
 
   void read_obj_file(const std::string& dir, const std::string& filename,
-		     scene& sc, bool allow_lights) {
+		     scene_t& sc, bool allow_lights) {
     std::string filepath = dir + "/" + filename;
     LOG_DEBUG << "read obj file [" << filepath << "]...";
     
@@ -252,8 +252,8 @@ namespace obj_reader
     std::vector<vec3f> textures;
     std::vector<vec3f> normals;
     imaterial* material = nullptr;
-    std::map<std::string, color> emissives;
-    color *emissive = nullptr;
+    std::map<std::string, color_t> emissives;
+    color_t *emissive = nullptr;
     
     for (std::string line; std::getline(stream, line);) {
       

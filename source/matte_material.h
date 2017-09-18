@@ -17,21 +17,21 @@
 class matte_material : public imaterial
 {
  private:
-  color _color;
+  color_t _color;
 
   std::mt19937 _gen;
   std::uniform_real_distribution<> _u1;
   std::uniform_real_distribution<> _u2;
 
  public:
- matte_material(const color& color)
+ matte_material(const color_t& color)
    : _color(color)
     , _gen(std::random_device()())
     , _u1(0, 1)
     , _u2(0, 1)
     {}
 
-  virtual ray shade(const intersection& i) override {
+  virtual ray_t shade(const intersection_t& i) override {
     auto unit = vec3f(0, 0, 1);
 
     auto rot_mat = find_rotation_matrix(unit, i.normal);
@@ -63,7 +63,7 @@ class matte_material : public imaterial
     }
 #endif
     assert(std::abs(dir.length() - 1.) < config::ERR);
-    return ray(i.position + dir * config::ERR,
+    return ray_t(i.position + dir * config::ERR,
 	       dir,
 	       i.ray->color() * _color,
 	       i.ray->age()+1);

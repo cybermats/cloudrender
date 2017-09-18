@@ -24,7 +24,7 @@ camera::camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
   _f = 1.f / (1.f/_do + 1.f/_di);
 }
 */
-camera::camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
+camera_t::camera_t(const vec3f& position, const vec3f& up, const vec3f& lookat,
 	       float focal, float hfow, float fstop,
 	       radiance_buffer* rb)
   : _counter(0)
@@ -47,7 +47,7 @@ camera::camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
   _v = _u.cross(_view_dir).normalize();
 }
 
-void camera::setup_scene(scene& s) {
+void camera_t::setup_scene(scene_t& s) {
   /*  
   auto v0 = _position - (0.1f * _v) - (0.1f * _u);
   auto v1 = _position - (0.1f * _v) + (0.1f * _u);
@@ -61,14 +61,14 @@ void camera::setup_scene(scene& s) {
   auto v2 = _position + (a * _v) - (a * _u);
   auto v3 = _position + (a * _v) + (a * _u);
 
-  auto t1 = triangle(v0, v2, v1, this);
-  auto t2 = triangle(v1, v2, v3, this);
+  auto t1 = triangle_t(v0, v2, v1, this);
+  auto t2 = triangle_t(v1, v2, v3, this);
 
   s.add_triangle(t1);
   s.add_triangle(t2);
 }
 
-bool camera::lens_equation(const intersection& i, vec2f& uv)
+bool camera_t::lens_equation(const intersection_t& i, vec2f& uv)
 {
   auto dir = -i.ray->direction();
   if (dir.dot(_view_dir) < 0)
@@ -114,14 +114,14 @@ bool camera::lens_equation(const intersection& i, vec2f& uv)
   return true;
 }
 
-ray camera::shade(const intersection& i) 
+ray_t camera_t::shade(const intersection_t& i) 
 {
   vec2f uv;
   if (!lens_equation(i, uv))
-    return ray();
+    return ray_t();
   _mtx.lock();
   _rb->emplace_back(uv, i.ray->color(), i.ray->age());
   _mtx.unlock();
   ++_counter;
-  return ray();
+  return ray_t();
 }

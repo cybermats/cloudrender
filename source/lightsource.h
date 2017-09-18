@@ -6,7 +6,7 @@
 #include "logger.h"
 #include "ilight.h"
 
-class lightsource
+class lightsource_t
 {
 private:
     std::vector<std::unique_ptr<ilight>> _lights;
@@ -14,11 +14,11 @@ private:
     std::mutex _mtx;
 
 public:
-    lightsource()
+    lightsource_t()
     : _index(0)
     {}
 
-    ray generate_ray() {
+    ray_t generate_ray() {
       assert(!_lights.empty());
       std::lock_guard<std::mutex> lg(_mtx);
         auto ray = _lights[_index++]->generate_ray();

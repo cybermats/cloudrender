@@ -2,11 +2,11 @@
 
 #include "color.h"
 
-color operator+(const color& left, const color& right) {
-  return color(left.r + right.r, left.g + right.g, left.b + right.b, std::max(left.a, right.a));
+color_t operator+(const color_t& left, const color_t& right) {
+  return color_t(left.r + right.r, left.g + right.g, left.b + right.b, std::max(left.a, right.a));
 }
 
-color& operator+=(color& left, const color& right) {
+color_t& operator+=(color_t& left, const color_t& right) {
   left.r += right.r;
   left.g += right.g;
   left.b += right.b;
@@ -14,14 +14,14 @@ color& operator+=(color& left, const color& right) {
   return left;
 }
 
-color operator*(const color& l, const color& r) {
-  return color(l.r * r.r, l.g * r.g, l.b * r.b, l.a * r.a);
+color_t operator*(const color_t& l, const color_t& r) {
+  return color_t(l.r * r.r, l.g * r.g, l.b * r.b, l.a * r.a);
 }
 
-color operator*(const color& c, float v) {
-  return color(c.r * v, c.g * v, c.b * v, c.a);
+color_t operator*(const color_t& c, float v) {
+  return color_t(c.r * v, c.g * v, c.b * v, c.a);
 }
 
-color operator*(float v, const color& c) {
-  return color(c.r * v, c.g * v, c.b * v, c.a);
+color_t operator*(float v, const color_t& c) {
+  return color_t(c.r * v, c.g * v, c.b * v, c.a);
 }

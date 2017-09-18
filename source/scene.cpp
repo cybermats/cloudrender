@@ -2,13 +2,13 @@
 
 #include "kd_tree.h"
 
-intersection scene::intersect(ray& r)
+intersection_t scene_t::intersect(ray_t& r)
 {
   auto t_min = std::numeric_limits<float>::max();
   auto u = 0.f;
   auto v = 0.f;
 #ifdef NO_ACCELERATOR  
-  auto hit = (triangle*)nullptr;
+  auto hit = (triangle_t*)nullptr;
   for(auto& tri: _triangles) {
     auto t = tri.intersect(r, u, v);
     if (t > 0 && t < t_min) {
@@ -30,7 +30,7 @@ intersection scene::intersect(ray& r)
     t_min = -1;
   }
 
-  return intersection {
+  return intersection_t {
     t_min,
       hit,
       normal,
@@ -39,7 +39,7 @@ intersection scene::intersect(ray& r)
       };
 }
 
-void scene::add_triangle(const triangle& t) {
+void scene_t::add_triangle(const triangle_t& t) {
 #ifdef NO_ACCELERATOR
   _triangles.push_back(t);
 #else
@@ -54,19 +54,19 @@ void scene::add_camera(const vec3f& position, const vec3f& up, const vec3f& look
   _cam->setup_scene(*this);
 }
 */
-void scene::add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
+void scene_t::add_camera(const vec3f& position, const vec3f& up, const vec3f& lookat,
 		       float focal, float hfov, float fstop, radiance_buffer* rb) {
-  _cam = std::unique_ptr<camera>(new camera(position, up, lookat,
+  _cam = std::unique_ptr<camera_t>(new camera_t(position, up, lookat,
 					    focal, hfov, fstop, rb));
   _cam->setup_scene(*this);
 }
 
-lightsource& scene::lightsource()
+lightsource_t& scene_t::lightsource()
 {
   return _lightsource;
 }
 
-material_collection& scene::material()
+material_collection& scene_t::material()
 {
   return _materials;
 }
