@@ -244,7 +244,7 @@ namespace obj_reader
   void read_obj_file(const std::string& dir, const std::string& filename,
 		     scene& sc, bool allow_lights) {
     std::string filepath = dir + "/" + filename;
-    LOG_DEBUG << "read obj file [" << filepath << "]..." << std::endl;
+    LOG_DEBUG << "read obj file [" << filepath << "]...";
     
     std::ifstream stream(filepath, std::ifstream::in);
 
